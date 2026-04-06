@@ -1152,7 +1152,7 @@ function App() {
                                           <span style={{
                                             backgroundColor: logicalOp === 'AND' ? '#FDF4FF' : '#FCE7F3',
                                             color: logicalOp === 'AND' ? '#C026D3' : '#DB2777',
-                                            padding: '2px 8px', borderRadius: '12px', fontSize: '14px', fontWeight: 600
+                                            padding: '2px 8px', borderRadius: '12px', fontSize: '12px', fontWeight: 500
                                           }}>{logicalOp === 'AND' ? '그리고' : '또는'}</span>
                                         </div>
                                       )}
