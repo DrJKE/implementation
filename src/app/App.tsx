@@ -32,7 +32,9 @@ interface Node {
   defaultNextBadge?: string; defaultNextTitle?: string;
 }
 
-interface Edge { id: string; from: number; to: number; fromOption?: number; fromLogicDir?: string; toLogicDir?: string; fromLogicIdx?: number; midX?: number; }
+// 김문주 수정 edge 타입에 midY추가
+interface Edge { id: string; from: number; to: number; fromOption?: number; fromLogicDir?: string; toLogicDir?: string; fromLogicIdx?: number; midX?: number; midY?: number; }
+// 김문주 수정 edge 완료
 interface DrawingEdge { fromNodeId: number; fromX: number; fromY: number; fromOption?: number; fromLogicDir?: string; fromLogicIdx?: number; }
 interface HistoryState { nodes: Node[]; edges: Edge[]; }
 
