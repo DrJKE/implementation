@@ -18,36 +18,43 @@
   --red: #EF4444;
   --green: #10B981;
   --badge-bg: #eaedf8;
-  --shadow: 0 1px 4px rgba(0,0,0,0.06);
-  --shadow-hover: 0 6px 24px rgba(0,0,0,0.10);
+  --shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  --shadow-hover: 0 6px 24px rgba(0, 0, 0, 0.10);
 }
 
 
 /* ── CANVAS ── */
 #canvas {
   position: fixed;
-  left: 284px; top: 52px; bottom: 0;
+  left: 284px;
+  top: 52px;
+  bottom: 0;
   overflow: hidden;
   background: #F7F7FA;
-  background-image: radial-gradient(circle, rgba(0,0,0,0.07) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.07) 1px, transparent 1px);
   background-size: 20px 20px;
   cursor: default;
 }
+
 #canvas-inner {
   position: absolute;
-  width: 4000px; height: 2000px;
+  width: 4000px;
+  height: 2000px;
   transform-origin: 0 0;
 }
 
 /* ── SVG EDGES ── */
 #edge-svg {
   position: absolute;
-  top: 0; left: 0;
-  width: 4000px; height: 2000px;
+  top: 0;
+  left: 0;
+  width: 4000px;
+  height: 2000px;
   pointer-events: none;
   overflow: visible;
   z-index: 5;
 }
+
 /*이유림 z-index 10에서 5로 수정*/
 
 /* ── NODE CARDS ── */
@@ -63,43 +70,73 @@
   transition: box-shadow .2s, border-color .2s;
   user-select: none;
 }
-.node:hover { box-shadow: var(--shadow-hover); border-color: var(--blue-mid); }
+
+.node:hover {
+  box-shadow: var(--shadow-hover);
+  border-color: var(--blue-mid);
+}
+
 .node.selected {
   border-color: var(--blue);
-  box-shadow: 0 0 0 3px rgba(0,126,255,0.12), var(--shadow-hover);
+  box-shadow: 0 0 0 3px rgba(0, 126, 255, 0.12), var(--shadow-hover);
 }
 
 .node-header {
-  display: flex; align-items: center; gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 10px 12px 8px;
   border-bottom: 1px solid var(--border);
   cursor: grab;
 }
-.node-header:active { cursor: grabbing; }
-.node-title {
-  font-size: 12px; font-weight: 500; color: var(--text);
-  flex: 1; line-height: 1.4;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+
+.node-header:active {
+  cursor: grabbing;
 }
+
+.node-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  flex: 1;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .node-body {
   padding: 9px 12px 11px;
-  display: flex; flex-direction: column; gap: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 /* ── OPTION PILLS ── */
 .option-pill {
-  padding: 9px 14px; font-size: 11px; font-weight: 500;
-  border: 1.5px solid var(--border2); border-radius: 10px;
-  color: var(--text); background: var(--bg4);
-  transition: all .15s; cursor: default;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  padding: 9px 14px;
+  font-size: 12px;
+  font-weight: 400;
+  border: 1.5px solid var(--border2);
+  border-radius: 10px;
+  color: var(--text);
+  background: var(--bg4);
+  transition: all .15s;
+  cursor: default;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.option-pill:hover { border-color: var(--blue-mid); background: var(--blue-light); }
+
+.option-pill:hover {
+  border-color: var(--blue-mid);
+  background: var(--blue-light);
+}
 
 /* ── LOGIC CONTAINER ── */
 .logic-container {
   background: #f0f3fb;
-  border: 1px solid rgba(0,126,255,0.15);
+  border: 1px solid rgba(0, 126, 255, 0.15);
   border-radius: 10px;
   padding: 7px 10px;
   margin-top: 5px;
@@ -111,55 +148,109 @@
 }
 
 .condition-row {
-  display: flex; align-items: center; gap: 5px;
-  flex-wrap: wrap; font-size: 10px; color: #212121;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: #212121;
   padding: 3px 18px 3px 0;
   position: relative;
 }
+
 .cond-tag {
-  background: #dae2ed; color: #7d7e84;
-  border-radius: 50px; padding: 2px 8px;
-  font-size: 10px; font-weight: 600; flex-shrink: 0;
+  background: #dae2ed;
+  color: #7d7e84;
+  border-radius: 50px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  flex-shrink: 0;
 }
-.cond-tag-option { background: #dae2ed; color: #7d7e84; }
-.cond-tag-operator { background: #dae2ed; color: #7d7e84; }
-.cond-label { font-size: 10px; color: #212121; }
+
+.cond-tag-option {
+  background: #dae2ed;
+  color: #7d7e84;
+}
+
+.cond-tag-operator {
+  background: #dae2ed;
+  color: #687384;
+}
+
+.cond-label {
+  font-size: 14px;
+  color: #687384;
+}
 
 .or-separator {
-  display: flex; align-items: center; padding: 3px 0;
+  display: flex;
+  align-items: center;
+  padding: 3px 0;
 }
-.or-badge, .or-badge-inline {
-  background: #efddff; color: #b125aa;
-  border-radius: 12px; padding: 2px 8px;
-  font-size: 10px; font-weight: 700;
+
+.or-badge,
+.or-badge-inline {
+  background: #EFDDFF;
+  color: #B125AA;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 400;
 }
 
 /* ── HANDLES ── */
 .handle {
-  position: absolute; width: 13px; height: 13px;
-  border-radius: 50%; border: 2.5px solid var(--blue);
-  background: #fff; top: 50%; transform: translateY(-50%);
-  transition: all .15s; z-index: 10; cursor: crosshair;
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 2.5px solid var(--blue);
+  background: #fff;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: all .15s;
+  z-index: 10;
+  cursor: crosshair;
 }
-.handle.source { right: -7px; }
-.handle.target { left: -7px; cursor: default; }
-.handle:hover, .handle.hovered {
+
+.handle.source {
+  right: -7px;
+}
+
+.handle.target {
+  left: -7px;
+  cursor: default;
+}
+
+.handle:hover,
+.handle.hovered {
   background: var(--blue);
   transform: translateY(-50%) scale(1.5);
-  box-shadow: 0 0 0 4px rgba(0,126,255,0.2);
+  box-shadow: 0 0 0 4px rgba(0, 126, 255, 0.2);
 }
 
 /* ── MINIMAP ── */
 #minimap-container {
   position: fixed;
-  right: 16px; bottom: 16px;
+  right: 16px;
+  bottom: 16px;
   z-index: 95;
 }
 
 /* ── SCROLLBAR ── */
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
 
 /* Edge path for pointer events */
 .edge-path {
