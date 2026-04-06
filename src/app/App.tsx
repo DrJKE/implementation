@@ -147,7 +147,7 @@ function QBadge({ num, selected }: { num: string; selected?: boolean }) {
   return (
     <div style={{ background: selected ? C.blueLight : C.badgeBg, borderRadius: 10, padding: '4px 7px', display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
       <SurveyIcon color={C.blueDark} size={11} />
-      <span style={{ fontSize: 12, fontWeight: 600, color: C.blueDark, letterSpacing: '-0.01em', lineHeight: 1 }}>{num}</span>
+      <span style={{ fontSize: 14, fontWeight: 600, color: C.blueDark, letterSpacing: '-0.01em', lineHeight: 1 }}>{num}</span>
     </div>
   );
 }
@@ -173,7 +173,7 @@ function PreviewModal({ nodes, onClose }: { nodes: Node[]; onClose: () => void }
             <div style={{ fontSize: 36, marginBottom: 12 }}>✓</div>
             <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 6 }}>설문이 완료되었습니다!</div>
             <div style={{ fontSize: 12, color: C.text2, marginBottom: 18 }}>답해 주셔서 감사합니다.</div>
-            <button onClick={onClose} style={{ background: C.blue, color: '#fff', border: 'none', padding: '9px 28px', borderRadius: 10, cursor: 'pointer', fontSize: 13 }}>닫기</button>
+            <button onClick={onClose} style={{ background: C.blue, color: '#fff', border: 'none', padding: '9px 28px', borderRadius: 10, cursor: 'pointer', fontSize: 14 }}>닫기</button>
           </div>
         ) : (
           <>
@@ -183,27 +183,27 @@ function PreviewModal({ nodes, onClose }: { nodes: Node[]; onClose: () => void }
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
               <QBadge num={q.badge} />
-              <div style={{ fontSize: 10, color: C.text2 }}>{step + 1} / {nodes.length}</div>
+              <div style={{ fontSize: 14, color: C.text2 }}>{step + 1} / {nodes.length}</div>
             </div>
             <div style={{ background: C.bg3, borderRadius: 4, height: 3, marginBottom: 14 }}>
               <div style={{ width: `${Math.round((step + 1) / nodes.length * 100)}%`, height: '100%', background: C.blue, borderRadius: 4, transition: 'width 0.3s' }} />
             </div>
             <div style={{ fontSize: 14, fontWeight: 500, lineHeight: 1.6, marginBottom: 14 }}>{q.title}</div>
             {q.type === '주관식' ? (
-              <textarea style={{ width: '100%', border: `1px solid ${C.border2}`, borderRadius: 10, padding: '10px 14px', fontSize: 13, height: 80, resize: 'none', fontFamily: 'inherit', outline: 'none', background: C.bg4, boxSizing: 'border-box' }} placeholder="답변을 입력하세요..." />
+              <textarea style={{ width: '100%', border: `1px solid ${C.border2}`, borderRadius: 10, padding: '10px 14px', fontSize: 14, height: 80, resize: 'none', fontFamily: 'inherit', outline: 'none', background: C.bg4, boxSizing: 'border-box' }} placeholder="답변을 입력하세요..." />
             ) : (
               q.options.map(o => {
                 const isSel = (answers[q.id] || new Set()).has(o);
                 return (
-                  <div key={o} onClick={() => toggleOpt(q.id, o, q.type)} style={{ border: `1.5px solid ${isSel ? C.blue : C.border2}`, background: isSel ? C.blueLight : C.bg4, borderRadius: 10, padding: '11px 16px', marginBottom: 8, cursor: 'pointer', fontSize: 13, color: isSel ? C.blueDark : C.text, transition: 'all 0.1s' }}>{o}</div>
+                  <div key={o} onClick={() => toggleOpt(q.id, o, q.type)} style={{ border: `1.5px solid ${isSel ? C.blue : C.border2}`, background: isSel ? C.blueLight : C.bg4, borderRadius: 10, padding: '11px 16px', marginBottom: 8, cursor: 'pointer', fontSize: 14, color: isSel ? C.blueDark : C.text, transition: 'all 0.1s' }}>{o}</div>
                 );
               })
             )}
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16, gap: 8 }}>
               {step > 0
-                ? <button onClick={() => setStep(s => s - 1)} style={{ flex: 1, border: `1px solid ${C.border}`, background: C.bg, padding: '9px 0', borderRadius: 10, cursor: 'pointer', fontSize: 13, color: C.text2 }}>이전</button>
+                ? <button onClick={() => setStep(s => s - 1)} style={{ flex: 1, border: `1px solid ${C.border}`, background: C.bg, padding: '9px 0', borderRadius: 10, cursor: 'pointer', fontSize: 14, color: C.text2 }}>이전</button>
                 : <span style={{ flex: 1 }} />}
-              <button onClick={() => setStep(s => s + 1)} style={{ flex: 1, background: C.blue, color: '#fff', border: 'none', padding: '9px 0', borderRadius: 10, cursor: 'pointer', fontSize: 13, fontWeight: 500 }}>다음 →</button>
+              <button onClick={() => setStep(s => s + 1)} style={{ flex: 1, background: C.blue, color: '#fff', border: 'none', padding: '9px 0', borderRadius: 10, cursor: 'pointer', fontSize: 14, fontWeight: 500 }}>다음 →</button>
             </div>
           </>
         )}
@@ -229,7 +229,7 @@ function QuestionPicker({ nodes, excludeId, currentGotoId, onSelect, onClose }: 
           <input ref={inputRef} value={search} onChange={e => setSearch(e.target.value)} placeholder="질문 검색" style={{ flex: 1, border: 'none', outline: 'none', fontSize: 14, color: 'rgba(33,33,33,0.5)', fontFamily: 'inherit', background: 'transparent' }} />
         </div>
         <div style={{ maxHeight: 380, overflowY: 'auto', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 4 }}>
-          {filtered.length === 0 && <div style={{ fontSize: 13, color: C.text2, textAlign: 'center', padding: '20px 0' }}>검색 결과가 없어요</div>}
+          {filtered.length === 0 && <div style={{ fontSize: 14, color: C.text2, textAlign: 'center', padding: '20px 0' }}>검색 결과가 없어요</div>}
           {filtered.map(n => {
             const isSel = n.id === currentGotoId;
             return (
@@ -237,7 +237,7 @@ function QuestionPicker({ nodes, excludeId, currentGotoId, onSelect, onClose }: 
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 8px', borderRadius: 9, cursor: 'pointer', background: isSel ? C.blueLight : 'transparent', transition: 'background 0.1s' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
                   <QBadge num={n.badge} selected={isSel} />
-                  <span style={{ fontSize: 13, color: C.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{n.title.slice(0, 20)}</span>
+                  <span style={{ fontSize: 14, color: C.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{n.title.slice(0, 20)}</span>
                 </div>
                 {isSel && <svg width={14} height={14} viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke={C.blue} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" /></svg>}
               </div>
@@ -533,70 +533,6 @@ function App() {
           }
         }
       }
-      // 김문주 코드 삭제: 빈 공간에 드롭 시 새 노드 생성 기능 삭제
-      // } else {
-      //   // 드롭 대상이 없는 빈 공간일 경우 새 노드를 생성 (파생 카드로 그룹화)
-      //   setNodes(prev => {
-      //     const sourceNode = prev.find(n => n.id === drawingEdge.fromNodeId);
-      //     if (!sourceNode) return prev;
-
-      //     const baseId = getGroupId(sourceNode.badge);
-      //     const existingInGroup = prev.filter(n => getGroupId(n.badge) === baseId);
-
-      //     let newBadge = '';
-      //     let renameMaster = false;
-
-      //     if (existingInGroup.length === 1 && existingInGroup[0].badge === baseId) {
-      //       newBadge = `${baseId}-2`;
-      //       renameMaster = true;
-      //     } else {
-      //       let maxSuffix = 0;
-      //       existingInGroup.forEach(n => {
-      //         const m = n.badge.match(/-(\d+)$/);
-      //         if (m) maxSuffix = Math.max(maxSuffix, parseInt(m[1]));
-      //       });
-      //       newBadge = `${baseId}-${maxSuffix + 1}`;
-      //     }
-
-      //     const newNodeId = Math.max(...prev.map(n => n.id), 0) + 1;
-      //     const newNode: Node = {
-      //       id: newNodeId,
-      //       x: mx - 140,
-      //       y: my - 100,
-      //       badge: newBadge,
-      //       type: '객관식',
-      //       title: '새로운 문항',
-      //       short: '새로운 문항',
-      //       options: ['예', '아니요'],
-      //       conditions: []
-      //     };
-
-      //     const nextNodes = prev.map(n => {
-      //       if (renameMaster && n.id === sourceNode.id) {
-      //         return { ...n, badge: `${baseId}-1` };
-      //       }
-      //       return n;
-      //     });
-      //     nextNodes.push(newNode);
-
-      //     // 새 노드 생성 후, 바로 선을 새 노드와 연결하도록 처리
-      //     setTimeout(() => {
-      //       if (drawingEdge.fromLogicIdx !== undefined) {
-      //         handleUpdateCondition(drawingEdge.fromNodeId, drawingEdge.fromLogicIdx, {
-      //           next: newNodeId.toString(),
-      //           destinationBadge: newBadge,
-      //           destinationTitle: newNode.title
-      //         });
-      //       } else {
-      //         handleUpdateDefaultNext(drawingEdge.fromNodeId, newBadge, newNode.title, newNodeId);
-      //       }
-      //       showToast(`새 카드(${newBadge})가 생성되었어요`);
-      //     }, 0);
-
-      //     return nextNodes;
-      //   });
-      // }
-
       const drawingPath = document.getElementById('drawing-edge') as unknown as SVGPathElement;
       if (drawingPath) drawingPath.style.display = 'none';
       setDrawingEdge(null); setHoverInputId(null); hoverInputRef.current = null;
@@ -1019,14 +955,14 @@ function App() {
                       <line x1={bX + 10} y1={bY + 10} x2={bX + 20} y2={bY + 10} stroke={C.blueDark} strokeWidth={1.3} strokeLinecap="round" />
                       <line x1={bX + 10} y1={bY + 15} x2={bX + 20} y2={bY + 15} stroke={C.blueDark} strokeWidth={1.3} strokeLinecap="round" />
                       <line x1={bX + 10} y1={bY + 20} x2={bX + 20} y2={bY + 20} stroke={C.blueDark} strokeWidth={1.3} strokeLinecap="round" />
-                      <text x={bX + 30} y={bY + bH / 2 + 4.5} textAnchor="middle" fontSize={11} fontWeight={700} fill={C.blueDark} fontFamily="Pretendard,-apple-system,sans-serif">{destNum}</text>
-                      <text x={bX + 8 + 44 + 4 + 13} y={bY + bH / 2 + 4.5} textAnchor="middle" fontSize={13} fill="#212121" fontFamily="Pretendard,-apple-system,sans-serif">이동</text>
+                      <text x={bX + 30} y={bY + bH / 2 + 4.5} textAnchor="middle" fontSize={12} fontWeight={500} fill={C.blueDark} fontFamily="Pretendard,-apple-system,sans-serif">{destNum}</text>
+                      <text x={bX + 8 + 44 + 4 + 13} y={bY + bH / 2 + 4.5} textAnchor="middle" fontSize={14} fill="#687384" fontFamily="Pretendard,-apple-system,sans-serif">이동</text>
                     </g>
                   )}
                   {isHovered && (
                     <g style={{ cursor: 'pointer', pointerEvents: 'all' }} onClick={(ev) => { ev.stopPropagation(); deleteEdge(e.id); setSelectedEdgeId(null); setHoverConnIdx(null); }}>
                       <circle cx={bX + bW + 12} cy={y1} r={9} fill={C.red} opacity={0.92} />
-                      <text x={bX + bW + 12} y={y1 + 4.5} textAnchor="middle" fontSize={13} fill="#fff" fontWeight={700} fontFamily="-apple-system,sans-serif">×</text>
+                      <text x={bX + bW + 12} y={y1 + 4.5} textAnchor="middle" fontSize={12} fill="#fff" fontWeight={700} fontFamily="-apple-system,sans-serif">×</text>
                     </g>
                   )}
                 </g>
@@ -1151,7 +1087,7 @@ function App() {
                   {/* Body */}
                   <div className="node-body">
                     {n.type === '주관식' ? (
-                      <div style={{ border: `1.5px solid ${C.border2}`, borderRadius: 10, padding: '9px 14px', fontSize: 11, color: C.text2, height: 38, display: 'flex', alignItems: 'center', background: C.bg4 }}>주관식 입력</div>
+                      <div style={{ border: `1.5px solid ${C.border2}`, borderRadius: 10, padding: '9px 14px', fontSize: 14, color: C.text2, height: 38, display: 'flex', alignItems: 'center', background: C.bg4 }}>주관식 입력</div>
                     ) : (
                       n.options.map((o, oIdx) => {
                         const isSo = (selOpts[n.id] || new Set()).has(o);
@@ -1165,13 +1101,13 @@ function App() {
                               border: `1.5px solid ${isSo ? C.blue : C.border2}`,
                               background: isSo ? C.blueLight : C.bg4,
                               borderRadius: 10, padding: '9px 14px', marginBottom: 0,
-                              fontSize: 11, color: isSo ? C.blueDark : C.text,
+                              fontSize: 14, color: isSo ? C.blueDark : C.text,
                               transition: 'all 0.1s',
                               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                               fontWeight: isSo ? 500 : 400, position: 'relative',
                             }}>
                             <span style={{ paddingRight: '16px' }}>{o}</span>
-                            {hasGoto && <span style={{ fontSize: 9, color: C.blue, opacity: isSo ? 1 : 0.45, fontWeight: 500 }}>{hasGoto.destinationBadge || '→'} ▸</span>}
+                            {hasGoto && <span style={{ fontSize: 14, color: C.blue, opacity: isSo ? 1 : 0.45, fontWeight: 500 }}>{hasGoto.destinationBadge || '→'} ▸</span>}
 
                             {/* 삭제 버튼 */}
                             <div
@@ -1216,13 +1152,13 @@ function App() {
                                           <span style={{
                                             backgroundColor: logicalOp === 'AND' ? '#FDF4FF' : '#FCE7F3',
                                             color: logicalOp === 'AND' ? '#C026D3' : '#DB2777',
-                                            padding: '2px 8px', borderRadius: '12px', fontSize: '10px', fontWeight: 600
+                                            padding: '2px 8px', borderRadius: '12px', fontSize: '14px', fontWeight: 600
                                           }}>{logicalOp === 'AND' ? '그리고' : '또는'}</span>
                                         </div>
                                       )}
 
                                       {/* 2. 아이콘과 텍스트를 분리하는 전체 컨테이너 */}
-                                      <div style={{ display: 'flex', alignItems: 'flex-start', width: '100%' }}>
+                                      <div style={{ display: 'flex', alignItems: 'flex-start', width: '100%', fontSize: '14px' }}>
 
                                         {/* 좌측 고정 너비 영역: 14px(아이콘) + 5px(여백) = 19px 확보 */}
                                         <div style={{ width: '19px', flexShrink: 0, display: 'flex', paddingTop: '1px' }}>
@@ -1234,7 +1170,7 @@ function App() {
                                         </div>
 
                                         {/* 우측 텍스트 영역: 줄바꿈(wrap)은 오직 이 구역 안에서만 일어남 */}
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap', flex: 1 }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap', flex: 1, fontSize: '14px' }}>
                                           <span className="cond-label" style={{ whiteSpace: 'nowrap' }}>만약</span>
                                           <span className="cond-tag cond-tag-option" style={{ background: '#E2E8F0', color: '#64748B', wordBreak: 'keep-all', whiteSpace: 'normal', lineHeight: '1.4', textAlign: 'left' }}>{tag}</span>
                                           <span className="cond-tag cond-tag-operator" style={{ background: '#DBEAFE', color: '#3B82F6', whiteSpace: 'nowrap' }}>{opForTag}</span>
@@ -1319,13 +1255,13 @@ function App() {
         <Minimap nodes={nodes} scale={scale} offset={{ x: panX, y: panY }} canvasSize={canvasSize} onViewportChange={handleViewportChange} />
 
         {/* Toast (위로 변경, 헤더 밑에 노출) */}
-        <div style={{ position: 'fixed', top: 76, left: '50%', transform: `translateX(-50%) translateY(${toastVis ? 0 : -20}px)`, background: 'rgba(30,28,60,0.92)', color: '#fff', padding: '6px 16px', borderRadius: 20, fontSize: 13, opacity: toastVis ? 1 : 0, transition: 'opacity 0.2s,transform 0.2s', whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 9999 }}>
+        <div style={{ position: 'fixed', top: 76, left: '50%', transform: `translateX(-50%) translateY(${toastVis ? 0 : -20}px)`, background: 'rgba(30,28,60,0.92)', color: '#fff', padding: '6px 16px', borderRadius: 20, fontSize: 14, opacity: toastVis ? 1 : 0, transition: 'opacity 0.2s,transform 0.2s', whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 9999 }}>
           {toastMsg}
         </div>
 
         {/* Drawing hint */}
         {drawingEdge && (
-          <div style={{ position: 'fixed', top: 120, left: '50%', transform: 'translateX(-50%)', background: 'rgba(30,28,60,0.85)', color: '#fff', padding: '5px 14px', borderRadius: 20, fontSize: 13, zIndex: 30, pointerEvents: 'none', whiteSpace: 'nowrap' }}>
+          <div style={{ position: 'fixed', top: 120, left: '50%', transform: 'translateX(-50%)', background: 'rgba(30,28,60,0.85)', color: '#fff', padding: '5px 14px', borderRadius: 20, fontSize: 14, zIndex: 30, pointerEvents: 'none', whiteSpace: 'nowrap' }}>
             {hoverInputId !== null ? '✓ 연결 가능! 마우스를 놓으세요' : '연결할 카드에 가져다 놓으세요'}
             {/* 수정5 관련 토스트 수정 바로 위 문장 끗~ */}
           </div>
