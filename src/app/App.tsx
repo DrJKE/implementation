@@ -1209,25 +1209,39 @@ function App() {
 
                                   return (
                                     <React.Fragment key={ti}>
+                                      {/* 김문주 로직 텍스트 줄바꿈 수정 */}
+                                      {/* 1. AND/OR 뱃지 (첫 번째 조건이 아닐 때만 표시) */}
                                       {ti > 0 && logicalOp && (
-                                        <div style={{ marginLeft: '24px' }}>
+                                        <div style={{ marginLeft: '19px', marginBottom: '2px' }}>
                                           <span style={{
-                                            backgroundColor: logicalOp === 'AND' ? '#FDF4FF' : '#FCE7F3', // 핑크/퍼플톤 배경
-                                            color: logicalOp === 'AND' ? '#C026D3' : '#DB2777', // 핑크/퍼플톤 텍스트
+                                            backgroundColor: logicalOp === 'AND' ? '#FDF4FF' : '#FCE7F3',
+                                            color: logicalOp === 'AND' ? '#C026D3' : '#DB2777',
                                             padding: '2px 8px', borderRadius: '12px', fontSize: '10px', fontWeight: 600
                                           }}>{logicalOp === 'AND' ? '그리고' : '또는'}</span>
                                         </div>
                                       )}
-                                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginLeft: ti > 0 ? '24px' : '0' }}>
-                                        {ti === 0 && (
-                                          <svg width="14" height="13" viewBox="0 0 14 13" fill="none">
-                                            <path d="M5.533 11.344c0 .124.036.245.103.35.068.106.165.19.28.245l1.384.667c.105.051.222.075.34.07a.937.937 0 00.682-.389.933.933 0 00.163-.586V7.34a.964.964 0 01.287-.448l4.996-5.331a.964.964 0 00.172-.34.96.96 0 00-.095-.773.964.964 0 00-.629-.447H.691a.96.96 0 00-.628.447.96.96 0 00-.095.773.964.964 0 00.172.34l4.997 5.331a.964.964 0 01.286.448l.11 4.004z" fill="#687384" />
-                                          </svg>
-                                        )}
-                                        <span className="cond-label">만약</span>
-                                        <span className="cond-tag cond-tag-option" style={{ background: '#E2E8F0', color: '#64748B' }}>{tag}</span>
-                                        <span className="cond-tag cond-tag-operator" style={{ background: '#DBEAFE', color: '#3B82F6' }}>{opForTag}</span>
-                                        <span className="cond-label">일 경우</span>
+
+                                      {/* 2. 아이콘과 텍스트를 분리하는 전체 컨테이너 */}
+                                      <div style={{ display: 'flex', alignItems: 'flex-start', width: '100%' }}>
+
+                                        {/* 좌측 고정 너비 영역: 14px(아이콘) + 5px(여백) = 19px 확보 */}
+                                        <div style={{ width: '19px', flexShrink: 0, display: 'flex', paddingTop: '1px' }}>
+                                          {ti === 0 && (
+                                            <svg width="14" height="13" viewBox="0 0 14 13" fill="none">
+                                              <path d="M5.533 11.344c0 .124.036.245.103.35.068.106.165.19.28.245l1.384.667c.105.051.222.075.34.07a.937.937 0 00.682-.389.933.933 0 00.163-.586V7.34a.964.964 0 01.287-.448l4.996-5.331a.964.964 0 00.172-.34.96.96 0 00-.095-.773.964.964 0 00-.629-.447H.691a.96.96 0 00-.628.447.96.96 0 00-.095.773.964.964 0 00.172.34l4.997 5.331a.964.964 0 01.286.448l.11 4.004z" fill="#687384" />
+                                            </svg>
+                                          )}
+                                        </div>
+
+                                        {/* 우측 텍스트 영역: 줄바꿈(wrap)은 오직 이 구역 안에서만 일어남 */}
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap', flex: 1 }}>
+                                          <span className="cond-label" style={{ whiteSpace: 'nowrap' }}>만약</span>
+                                          <span className="cond-tag cond-tag-option" style={{ background: '#E2E8F0', color: '#64748B', wordBreak: 'keep-all', whiteSpace: 'normal', lineHeight: '1.4', textAlign: 'left' }}>{tag}</span>
+                                          <span className="cond-tag cond-tag-operator" style={{ background: '#DBEAFE', color: '#3B82F6', whiteSpace: 'nowrap' }}>{opForTag}</span>
+                                          <span className="cond-label" style={{ whiteSpace: 'nowrap' }}>일 경우</span>
+                                        </div>
+                                        {/* 김문주 로직 텍스트 줄바꿈 수정 끗 */}
+
                                       </div>
                                     </React.Fragment>
                                   );
