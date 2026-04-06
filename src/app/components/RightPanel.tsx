@@ -37,6 +37,10 @@ export interface RightPanelNode {
   options?: string[];
   conditions?: Array<{
     tags?: string[];
+    logicalOperators?: string[];
+    operators?: string[];
+    targetNodeBadges?: string[];
+    targetNodeTitles?: string[];
     or?: boolean;
     next?: string | number;
     operator?: string;
@@ -234,173 +238,262 @@ export default function RightPanel({ selectedNode, nodes, onAddCondition, onAddL
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   <span style={{ fontSize: '12px', color: '#6b7280', paddingLeft: '4px', marginBottom: '2px' }}>조건</span>
 
-                  {/* 1. 대상 노드 선택 */}
-                  <div style={{ position: 'relative' }}>
-                    <div
-                      onClick={() => toggleDropdown(`targetNode-${index}`)}
-                      style={{
-                        display: 'flex', alignItems: 'center', width: '100%', height: '40px', padding: '0 12px',
-                        backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '12px', cursor: 'pointer', boxSizing: 'border-box'
-                      }}>
-                      <div style={{
-                        backgroundColor: '#eef2ff', color: '#4f46e5', fontSize: '11px', fontWeight: 'bold',
-                        padding: '2px 6px', borderRadius: '4px', marginRight: '8px', flexShrink: 0
-                      }}>
-                        {condition.targetNodeBadge || selectedNode.badge}
-                      </div>
-                      <span style={{ flex: 1, fontSize: '13px', color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left', fontWeight: 500 }}>
-                        {condition.targetNodeTitle || selectedNode.title}
-                      </span>
-                      <ChevronUpDown />
-                    </div>
+                  {/* 1~4. 옵션/커스텀 탭 및 선택된 값 */}
+                  {condition.tags?.map((tag, tagIdx) => {
+                    const currentTargetBadge = condition.targetNodeBadges?.[tagIdx] || (tagIdx === 0 ? condition.targetNodeBadge : undefined) || selectedNode.badge;
+                    const currentTargetTitle = condition.targetNodeTitles?.[tagIdx] || (tagIdx === 0 ? condition.targetNodeTitle : undefined) || selectedNode.title;
+                    const currentOperator = condition.operators?.[tagIdx] || (tagIdx === 0 ? condition.operator : undefined) || '같음';
 
-                    {openDropdown === `targetNode-${index}` && (
-                      <div style={{
-                        position: 'absolute', top: '44px', left: 0, right: 0, zIndex: 1000,
-                        backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '12px',
-                        boxShadow: '0 4px 6px rgba(0,0,0,0.1)', maxHeight: '200px', overflowY: 'auto'
-                      }}>
+                    return (
+                      <div key={tagIdx} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
 
-                        {/* 김문주 수정: 대상 노드에서 출발 노드를 제외하는 현상 수정 */}
-                        {/* 삭제한 코드: nodes.filter(n => n.id !== selectedNode.id) */}
-                        {/* {nodes.filter(n => n.id !== selectedNode.id).map((node, nodeIdx) => ( */}
-                        {/* 삭제 대신 추가한 코드: {nodes.map((node, nodeIdx) => ( */}
-                        {nodes.map((node, nodeIdx) => (
+                        {tagIdx > 0 && (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                            <div style={{ height: '1px', backgroundColor: '#e5e7eb', width: '100%', margin: '4px 0' }} />
+
+                            <div style={{ position: 'relative', alignSelf: 'flex-start' }}>
+                              <div
+                                onClick={() => toggleDropdown(`logicalOp-${index}-${tagIdx}`)}
+                                style={{
+                                  display: 'flex', alignItems: 'center', height: '28px', padding: '0 12px',
+                                  backgroundColor: '#f9fafb', borderRadius: '8px', cursor: 'pointer', gap: '6px',
+                                  border: '1px solid #f3f4f6'
+                                }}>
+                                <span style={{ fontSize: '12px', fontWeight: 600, color: '#6b7280' }}>
+                                  {condition.logicalOperators?.[tagIdx - 1] || 'OR'}
+                                </span>
+                                <ChevronUpDown />
+                              </div>
+
+                              {openDropdown === `logicalOp-${index}-${tagIdx}` && (
+                                <div style={{
+                                  position: 'absolute', top: '32px', left: 0, zIndex: 1000,
+                                  backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px',
+                                  boxShadow: '0 4px 6px rgba(0,0,0,0.1)', overflow: 'hidden', width: '80px'
+                                }}>
+                                  {['AND', 'OR'].map(op => (
+                                    <div
+                                      key={op}
+                                      onClick={() => {
+                                        const currentOps = condition.logicalOperators || Array(Math.max(0, (condition.tags?.length || 0) - 1)).fill('OR');
+                                        const newOps = [...currentOps];
+                                        newOps[tagIdx - 1] = op;
+                                        onUpdateCondition && onUpdateCondition(selectedNode.id, index, { logicalOperators: newOps });
+                                        setOpenDropdown(null);
+                                      }}
+                                      style={{
+                                        padding: '8px 12px', cursor: 'pointer', fontSize: '12px', fontWeight: 600, color: '#4b5563'
+                                      }}
+                                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ffffff'}
+                                    >
+                                      {op}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* 1. 대상 노드 선택 */}
+                        <div style={{ position: 'relative' }}>
                           <div
-                            key={nodeIdx}
-                            onClick={() => {
-                              onUpdateCondition && onUpdateCondition(selectedNode.id, index, {
-                                targetNodeBadge: node.badge,
-                                targetNodeTitle: node.title
-                              });
-                              setOpenDropdown(null);
-                            }}
+                            onClick={() => toggleDropdown(`targetNode-${index}-${tagIdx}`)}
                             style={{
-                              padding: '10px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center',
-                              borderBottom: '1px solid #f3f4f6'
-                            }}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ffffff'}
-                          >
+                              display: 'flex', alignItems: 'center', width: '100%', height: '40px', padding: '0 12px',
+                              backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '12px', cursor: 'pointer', boxSizing: 'border-box'
+                            }}>
                             <div style={{
                               backgroundColor: '#eef2ff', color: '#4f46e5', fontSize: '11px', fontWeight: 'bold',
                               padding: '2px 6px', borderRadius: '4px', marginRight: '8px', flexShrink: 0
                             }}>
-                              {node.badge}
+                              {currentTargetBadge}
                             </div>
-                            <span style={{ fontSize: '13px', color: '#374151', fontWeight: 500 }}>{node.title}</span>
+                            <span style={{ flex: 1, fontSize: '13px', color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left', fontWeight: 500 }}>
+                              {currentTargetTitle}
+                            </span>
+                            <ChevronUpDown />
                           </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
 
-                  {/* 2. 비교 연산자 (같음) 🚀 수정됨 */}
-                  <div style={{ position: 'relative' }}>
-                    <div
-                      onClick={() => toggleDropdown(`operator-${index}`)}
-                      style={{
-                        display: 'flex', alignItems: 'center', width: '100%', height: '36px', padding: '0 12px',
-                        backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '12px', cursor: 'pointer', boxSizing: 'border-box'
-                      }}>
-                      <span style={{ flex: 1, fontSize: '13px', color: '#374151', fontWeight: 500, textAlign: 'left' }}>
-                        {condition.operator || '같음'}
-                      </span>
-                      <ChevronUpDown />
-                    </div>
+                          {openDropdown === `targetNode-${index}-${tagIdx}` && (
+                            <div style={{
+                              position: 'absolute', top: '44px', left: 0, right: 0, zIndex: 1000,
+                              backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '12px',
+                              boxShadow: '0 4px 6px rgba(0,0,0,0.1)', maxHeight: '200px', overflowY: 'auto'
+                            }}>
+                              {nodes.map((node, nodeIdx) => (
+                                <div
+                                  key={nodeIdx}
+                                  onClick={() => {
+                                    const newTargetBadges = [...(condition.targetNodeBadges || Array(condition.tags?.length || 0).fill(selectedNode.badge))];
+                                    const newTargetTitles = [...(condition.targetNodeTitles || Array(condition.tags?.length || 0).fill(selectedNode.title))];
+                                    newTargetBadges[tagIdx] = node.badge;
+                                    newTargetTitles[tagIdx] = node.title;
 
-                    {openDropdown === `operator-${index}` && (
-                      <div style={{
-                        position: 'absolute', top: '40px', left: 0, width: '200px', zIndex: 1000,
-                        backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '12px',
-                        boxShadow: '0 4px 6px rgba(0,0,0,0.1)', maxHeight: '250px', overflowY: 'auto'
-                      }}>
-                        {operators.map((op, opIdx) => (
+                                    const updateData: any = { targetNodeBadges: newTargetBadges, targetNodeTitles: newTargetTitles };
+                                    if (tagIdx === 0) {
+                                      updateData.targetNodeBadge = node.badge;
+                                      updateData.targetNodeTitle = node.title;
+                                    }
+
+                                    onUpdateCondition && onUpdateCondition(selectedNode.id, index, updateData);
+                                    setOpenDropdown(null);
+                                  }}
+                                  style={{
+                                    padding: '10px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center',
+                                    borderBottom: '1px solid #f3f4f6'
+                                  }}
+                                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ffffff'}
+                                >
+                                  <div style={{
+                                    backgroundColor: '#eef2ff', color: '#4f46e5', fontSize: '11px', fontWeight: 'bold',
+                                    padding: '2px 6px', borderRadius: '4px', marginRight: '8px', flexShrink: 0
+                                  }}>
+                                    {node.badge}
+                                  </div>
+                                  <span style={{ fontSize: '13px', color: '#374151', fontWeight: 500 }}>{node.title}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* 2. 비교 연산자 (같음) */}
+                        <div style={{ position: 'relative' }}>
                           <div
-                            key={opIdx}
-                            onClick={() => {
-                              // 🚀 핵심: operator 필드만 업데이트
-                              onUpdateCondition && onUpdateCondition(selectedNode.id, index, { operator: op });
-                              setOpenDropdown(null);
-                            }}
+                            onClick={() => toggleDropdown(`operator-${index}-${tagIdx}`)}
                             style={{
-                              padding: '10px 12px', cursor: 'pointer',
-                              borderBottom: '1px solid #f3f4f6',
-                              fontSize: '13px', color: '#374151', fontWeight: 500
-                            }}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ffffff'}
-                          >
-                            {op}
+                              display: 'flex', alignItems: 'center', width: '100%', height: '36px', padding: '0 12px',
+                              backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '12px', cursor: 'pointer', boxSizing: 'border-box'
+                            }}>
+                            <span style={{ flex: 1, fontSize: '13px', color: '#374151', fontWeight: 500, textAlign: 'left' }}>
+                              {currentOperator}
+                            </span>
+                            <ChevronUpDown />
                           </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
 
-                  {/* 3. 옵션/커스텀 탭 */}
-                  <div style={{ display: 'flex', backgroundColor: '#f3f4f6', padding: '4px', borderRadius: '12px', marginTop: '2px' }}>
-                    <button style={{ flex: 1, height: '32px', backgroundColor: '#ffffff', border: 'none', borderRadius: '8px', fontSize: '12px', fontWeight: 600, color: '#374151', cursor: 'pointer', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>옵션 선택</button>
-                    <button style={{ flex: 1, height: '32px', backgroundColor: 'transparent', border: 'none', borderRadius: '8px', fontSize: '12px', fontWeight: 600, color: '#6b7280', cursor: 'pointer' }}>커스텀</button>
-                  </div>
+                          {openDropdown === `operator-${index}-${tagIdx}` && (
+                            <div style={{
+                              position: 'absolute', top: '40px', left: 0, width: '200px', zIndex: 1000,
+                              backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '12px',
+                              boxShadow: '0 4px 6px rgba(0,0,0,0.1)', maxHeight: '250px', overflowY: 'auto'
+                            }}>
+                              {operators.map((op, opIdx) => (
+                                <div
+                                  key={opIdx}
+                                  onClick={() => {
+                                    const newOperators = [...(condition.operators || Array(condition.tags?.length || 0).fill('같음'))];
+                                    newOperators[tagIdx] = op;
 
-                  {/* 4. 선택된 값 (배열 형태) */}
-                  {condition.tags?.map((tag, tagIdx) => (
-                    <div key={tagIdx} style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative', marginTop: tagIdx > 0 ? '4px' : '0px' }}>
-                      {tagIdx > 0 && <span style={{ fontSize: '11px', fontWeight: 600, color: '#4f46e5', backgroundColor: '#eef2ff', padding: '2px 6px', borderRadius: '4px' }}>OR</span>}
-                      <div
-                        onClick={() => toggleDropdown(`selectedValue-${index}-${tagIdx}`)}
-                        style={{
-                          display: 'flex', alignItems: 'center', flex: 1, height: '40px', padding: '0 12px',
-                          backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '12px', cursor: 'pointer', boxSizing: 'border-box'
-                        }}>
-                        <span style={{ flex: 1, fontSize: '13px', color: '#374151', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'center' }}>
-                          {tag || '옵션을 선택하세요'}
-                        </span>
-                        <ChevronUpDown />
-                      </div>
+                                    const updateData: any = { operators: newOperators };
+                                    if (tagIdx === 0) updateData.operator = op;
 
-                      {/* 조건 삭제 버튼 (태그 삭제) */}
-                      {(condition.tags?.length ?? 0) > 1 && (
-                        <div onClick={() => {
-                          const newTags = [...(condition.tags || [])];
-                          newTags.splice(tagIdx, 1);
-                          onUpdateCondition && onUpdateCondition(selectedNode.id, index, { tags: newTags });
-                        }}>
-                          <TrashIcon />
-                        </div>
-                      )}
-
-                      {openDropdown === `selectedValue-${index}-${tagIdx}` && (
-                        <div style={{
-                          position: 'absolute', top: '44px', left: tagIdx > 0 ? '36px' : 0, right: (condition.tags?.length ?? 0) > 1 ? '32px' : 0, zIndex: 1000,
-                          backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '12px',
-                          boxShadow: '0 4px 6px rgba(0,0,0,0.1)', maxHeight: '200px', overflowY: 'auto'
-                        }}>
-                          {selectedNode.options?.map((option, optIdx) => (
-                            <div
-                              key={optIdx}
-                              onClick={() => {
-                                const newTags = [...(condition.tags || [])];
-                                newTags[tagIdx] = option;
-                                onUpdateCondition && onUpdateCondition(selectedNode.id, index, { tags: newTags });
-                                setOpenDropdown(null);
-                              }}
-                              style={{
-                                padding: '10px 12px', cursor: 'pointer',
-                                borderBottom: '1px solid #f3f4f6',
-                                fontSize: '13px', color: '#374151', fontWeight: 500
-                              }}
-                              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
-                              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ffffff'}
-                            >
-                              {option}
+                                    onUpdateCondition && onUpdateCondition(selectedNode.id, index, updateData);
+                                    setOpenDropdown(null);
+                                  }}
+                                  style={{
+                                    padding: '10px 12px', cursor: 'pointer',
+                                    borderBottom: '1px solid #f3f4f6',
+                                    fontSize: '13px', color: '#374151', fontWeight: 500
+                                  }}
+                                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ffffff'}
+                                >
+                                  {op}
+                                </div>
+                              ))}
                             </div>
-                          ))}
+                          )}
                         </div>
-                      )}
-                    </div>
-                  )) || (
+
+                        <div style={{ display: 'flex', backgroundColor: '#f3f4f6', padding: '4px', borderRadius: '12px', marginTop: '2px' }}>
+                          <button style={{ flex: 1, height: '32px', backgroundColor: '#ffffff', border: 'none', borderRadius: '8px', fontSize: '12px', fontWeight: 600, color: '#374151', cursor: 'pointer', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>옵션 선택</button>
+                          <button style={{ flex: 1, height: '32px', backgroundColor: 'transparent', border: 'none', borderRadius: '8px', fontSize: '12px', fontWeight: 600, color: '#6b7280', cursor: 'pointer' }}>커스텀</button>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
+                          <div
+                            onClick={() => toggleDropdown(`selectedValue-${index}-${tagIdx}`)}
+                            style={{
+                              display: 'flex', alignItems: 'center', flex: 1, height: '40px', padding: '0 12px',
+                              backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '12px', cursor: 'pointer', boxSizing: 'border-box'
+                            }}>
+                            <span style={{ flex: 1, fontSize: '13px', color: '#374151', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left' }}>
+                              {tag || '옵션을 선택하세요'}
+                            </span>
+                            <ChevronUpDown />
+                          </div>
+
+                          {/* 조건 삭제 버튼 (태그 삭제) */}
+                          {(condition.tags?.length ?? 0) > 1 && (
+                            <div onClick={() => {
+                              const newTags = [...(condition.tags || [])];
+                              newTags.splice(tagIdx, 1);
+
+                              const currentOps = condition.logicalOperators || Array(Math.max(0, (condition.tags?.length || 0) - 1)).fill('OR');
+                              const newOps = [...currentOps];
+                              if (tagIdx > 0) newOps.splice(tagIdx - 1, 1);
+                              else if (newOps.length > 0) newOps.splice(0, 1);
+
+                              const newTargetBadges = [...(condition.targetNodeBadges || Array(condition.tags?.length || 0).fill(selectedNode.badge))];
+                              newTargetBadges.splice(tagIdx, 1);
+
+                              const newTargetTitles = [...(condition.targetNodeTitles || Array(condition.tags?.length || 0).fill(selectedNode.title))];
+                              newTargetTitles.splice(tagIdx, 1);
+
+                              const newOperators = [...(condition.operators || Array(condition.tags?.length || 0).fill('같음'))];
+                              newOperators.splice(tagIdx, 1);
+
+                              const updateData: any = {
+                                tags: newTags, logicalOperators: newOps,
+                                targetNodeBadges: newTargetBadges, targetNodeTitles: newTargetTitles, operators: newOperators
+                              };
+                              if (tagIdx === 0 && newTags.length > 0) {
+                                updateData.targetNodeBadge = newTargetBadges[0];
+                                updateData.targetNodeTitle = newTargetTitles[0];
+                                updateData.operator = newOperators[0];
+                              }
+
+                              onUpdateCondition && onUpdateCondition(selectedNode.id, index, updateData);
+                            }}>
+                              <TrashIcon />
+                            </div>
+                          )}
+
+                          {openDropdown === `selectedValue-${index}-${tagIdx}` && (
+                            <div style={{
+                              position: 'absolute', top: '44px', left: 0, right: (condition.tags?.length ?? 0) > 1 ? '32px' : 0, zIndex: 1000,
+                              backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '12px',
+                              boxShadow: '0 4px 6px rgba(0,0,0,0.1)', maxHeight: '200px', overflowY: 'auto'
+                            }}>
+                              {selectedNode.options?.map((option, optIdx) => (
+                                <div
+                                  key={optIdx}
+                                  onClick={() => {
+                                    const newTags = [...(condition.tags || [])];
+                                    newTags[tagIdx] = option;
+                                    onUpdateCondition && onUpdateCondition(selectedNode.id, index, { tags: newTags });
+                                    setOpenDropdown(null);
+                                  }}
+                                  style={{
+                                    padding: '10px 12px', cursor: 'pointer',
+                                    borderBottom: '1px solid #f3f4f6',
+                                    fontSize: '13px', color: '#374151', fontWeight: 500
+                                  }}
+                                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ffffff'}
+                                >
+                                  {option}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  }) || (
                       <div style={{ fontSize: '12px', color: '#9ca3af', padding: '8px' }}>선택 가능한 옵션이 없습니다.</div>
                     )}
                 </div>
@@ -408,8 +501,25 @@ export default function RightPanel({ selectedNode, nodes, onAddCondition, onAddL
                 {/* 새로운 조건 추가 버튼 */}
                 <button
                   onClick={() => {
-                    const newTags = [...(condition.tags || []), '새로운 옵션 선택'];
-                    onUpdateCondition && onUpdateCondition(selectedNode.id, index, { tags: newTags });
+                    const currentTags = condition.tags || [];
+                    const newTags = [...currentTags, '새로운 옵션 선택'];
+
+                    const currentOps = condition.logicalOperators || Array(Math.max(0, currentTags.length - 1)).fill('OR');
+                    const newOps = currentTags.length > 0 ? [...currentOps, 'OR'] : [];
+
+                    const currentOperator = condition.operators?.[currentTags.length - 1] || condition.operator || '같음';
+                    const newOperators = [...(condition.operators || Array(currentTags.length).fill(currentOperator)), currentOperator];
+
+                    const currentBadge = condition.targetNodeBadges?.[currentTags.length - 1] || condition.targetNodeBadge || selectedNode.badge;
+                    const newTargetBadges = [...(condition.targetNodeBadges || Array(currentTags.length).fill(currentBadge)), currentBadge];
+
+                    const currentTitle = condition.targetNodeTitles?.[currentTags.length - 1] || condition.targetNodeTitle || selectedNode.title;
+                    const newTargetTitles = [...(condition.targetNodeTitles || Array(currentTags.length).fill(currentTitle)), currentTitle];
+
+                    onUpdateCondition && onUpdateCondition(selectedNode.id, index, {
+                      tags: newTags, logicalOperators: newOps,
+                      operators: newOperators, targetNodeBadges: newTargetBadges, targetNodeTitles: newTargetTitles
+                    });
                   }}
                   style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '38px',
@@ -417,7 +527,7 @@ export default function RightPanel({ selectedNode, nodes, onAddCondition, onAddL
                     fontSize: '12px', fontWeight: 600, color: '#6b7280', cursor: 'pointer', boxSizing: 'border-box'
                   }}
                 >
-                  <PlusIcon /> 조건 옵션 추가 (OR)
+                  <PlusIcon /> 새로운 조건
                 </button>
 
                 <div style={{ height: '1px', backgroundColor: '#e5e7eb', width: '100%', margin: '4px 0' }} />
