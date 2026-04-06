@@ -450,8 +450,8 @@ function App() {
       const mx = (e.clientX - rect.left - panX) / scale;
       // 김문주 midY 드래그값 적용
       const my = (e.clientY - rect.top - panY) / scale;
+      setEdges(prev => prev.map(edge => edge.id === draggingEdgeMid ? { ...edge, midX: Math.round(mx / 10) * 10, midY: Math.round(my / 10) * 10 } : edge));
       // 김문주 midY 추가 끗
-      setEdges(prev => prev.map(edge => edge.id === draggingEdgeMid ? { ...edge, midX: Math.round(mx / 10) * 10 } : edge));
       return;
     }
     if (draggingNode !== null && canvasRef.current && dragOffsetRef.current) {
