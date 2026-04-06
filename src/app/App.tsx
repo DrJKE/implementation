@@ -39,8 +39,8 @@ interface DrawingEdge { fromNodeId: number; fromX: number; fromY: number; fromOp
 interface HistoryState { nodes: Node[]; edges: Edge[]; }
 
 // ─── SVG Path Helpers ─────────────────────────────────────────────────────────
-// 김문주 수정5. 노드 핸들 추가 및 연결선 수정: Edge 인터페이스에 방향, 통째로 수정
-function orthogonalPath(x1: number, y1: number, x2: number, y2: number, customMidX?: number, arrivalDir: string = 'left'): string {
+// 김문주_연결선 위아래조절 가능_orthogonalPath 함수 midY적용
+function orthogonalPath(x1: number, y1: number, x2: number, y2: number, customMidX?: number, customMidY?: number, arrivalDir: string = 'left'): string {
   const r = CORNER_R;
 
   // 1. 왼쪽 도착 (기존의 부드러운 순방향 라우팅)
@@ -75,7 +75,10 @@ function orthogonalPath(x1: number, y1: number, x2: number, y2: number, customMi
   const isTop = arrivalDir === 'top';
   const dirY = isTop ? 1 : -1; // 위로 들어갈지 아래로 들어갈지 방향
   const bufferY = 30; // 카드 위/아래 여유 공간
-  const midY = isTop ? y2 - bufferY : y2 + bufferY;
+
+  const defaultMidY = isTop ? y2 - bufferY : y2 + bufferY;
+  const midY = customMidY !== undefined ? customMidY : defaultMidY;
+  // 김문주_연결선 위아래조절 가능_orthogonalPath 함수 midY적용 끗
 
   let midX = customMidX !== undefined ? customMidX : x1 + 50;
   if (customMidX === undefined && x2 > x1 + 100) {
@@ -435,7 +438,9 @@ function App() {
 
       const drawingPath = document.getElementById('drawing-edge') as unknown as SVGPathElement;
       if (drawingPath) {
-        drawingPath.setAttribute('d', orthogonalPath(drawingEdge.fromX, drawingEdge.fromY, mx, my));
+        // 김문주 연결선 조절 관련 드로잉패스 수정
+        drawingPath.setAttribute('d', orthogonalPath(drawingEdge.fromX, drawingEdge.fromY, mx, my, undefined, undefined, drawDir));
+        // 김문주 연결선 조절 관련 드로잉패스 수정 끗
         drawingPath.style.display = '';
       }
       return;
@@ -443,6 +448,9 @@ function App() {
     if (draggingEdgeMid && canvasRef.current) {
       const rect = canvasRef.current.getBoundingClientRect();
       const mx = (e.clientX - rect.left - panX) / scale;
+      // 김문주 midY 드래그값 적용
+      const my = (e.clientY - rect.top - panY) / scale;
+      // 김문주 midY 추가 끗
       setEdges(prev => prev.map(edge => edge.id === draggingEdgeMid ? { ...edge, midX: Math.round(mx / 10) * 10 } : edge));
       return;
     }
@@ -957,9 +965,9 @@ function App() {
               // 김문주 수정5. 김문주 코드 추가
 
               const midXValue = e.midX !== undefined ? e.midX : (x1 + x2) / 2;
-              // 김문주 수정5. 김문주 코드 수정
-              const d = orthogonalPath(x1, y1, x2, y2, e.midX, targetDir);
-              // 김문주 수정5. 김문주 코드 수정 끗
+              // 김문주 연결선 타입 추가
+              const d = orthogonalPath(x1, y1, x2, y2, e.midX, e.midY, targetDir);
+              // 김문주 연결선 타입 추가
 
               const mid = orthogonalMid(x1, y1, x2, y2, e.midX);
               const isActive = selectedNode !== null && (e.from === selectedNode || e.to === selectedNode);
