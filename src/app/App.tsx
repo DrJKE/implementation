@@ -792,29 +792,41 @@ function App() {
     setTimeout(() => saveToHistory(), 50);
   };
 
+  // 김문주 수정 로직 연결선 중복 수정
   const handleUpdateCondition = (nid: number, idx: number, up: any) => {
     const node = nodes.find(n => n.id === nid);
     if (!node) return;
     const currentCond = node.conditions[idx];
-    let newEdgeId = currentCond.edgeId;
+
+    // 새 선의 ID를 setEdges 밖에서 미리 확정합니다. (엇박자 문제 해결!)
+    const targetEdgeId = currentCond.edgeId || `edge-logic-${nid}-${Date.now()}`;
+
     if (up.next !== undefined) {
       setEdges(prevEdges => {
         let edgesCopy = [...prevEdges];
-        if (newEdgeId) {
-          const edgeIdx = edgesCopy.findIndex(e => e.id === newEdgeId);
-          if (edgeIdx !== -1) { edgesCopy[edgeIdx] = { ...edgesCopy[edgeIdx], to: parseInt(up.next, 10), fromLogicIdx: idx }; return edgesCopy; }
+        // 현재 노드/로직에 연결된 선이 이미 있는지 찾습니다.
+        const edgeIdx = edgesCopy.findIndex(e => e.id === targetEdgeId);
+
+        if (edgeIdx !== -1) {
+          // 이미 선이 있다면 목적지(to)만 새 노드로 갈아끼웁니다 (중복 생성 철벽 방어!)
+          edgesCopy[edgeIdx] = { ...edgesCopy[edgeIdx], to: parseInt(up.next, 10), fromLogicIdx: idx };
+        } else {
+          // 선이 없다면 새로 추가합니다.
+          edgesCopy.push({ id: targetEdgeId, from: nid, to: parseInt(up.next, 10), fromLogicDir: 'right', fromLogicIdx: idx });
         }
-        newEdgeId = `edge-logic-${nid}-${Date.now()}`;
-        edgesCopy.push({ id: newEdgeId, from: nid, to: parseInt(up.next, 10), fromLogicDir: 'right', fromLogicIdx: idx });
         return edgesCopy;
       });
     }
+    //김문주 수정 로직 연결선 중복 수정 끗
+
     setNodes(prev => prev.map(n => {
       if (n.id !== nid) return n;
       const newConds = [...n.conditions];
-      newConds[idx] = { ...newConds[idx], ...up, edgeId: newEdgeId };
+      // 👇 3. 확정된 선의 ID를 노드 상태에도 확실하게 저장해줍니다.
+      newConds[idx] = { ...newConds[idx], ...up, edgeId: targetEdgeId };
       return { ...n, conditions: newConds };
     }));
+
     setTimeout(() => saveToHistory(), 50);
   };
 
