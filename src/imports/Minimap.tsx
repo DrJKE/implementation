@@ -1,3 +1,4 @@
+/*조민정 미니맵 전체수정- 피그마ui와 동일하게*/
 import { useEffect, useRef, useState } from 'react';
 
 interface MinimapNode {
@@ -106,25 +107,34 @@ export function Minimap({
 
   return (
     <div
-      className="fixed bg-white rounded-lg shadow-lg border border-gray-300 overflow-hidden"
       style={{
-        right: '290px',
-        bottom: '16px',
+        display: 'flex',
+        width: '240px',
+        height: '160px',
+        paddingBottom: '16px',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'fixed', // absolute에서 fixed로 변경
+        right: '319px',
+        bottom: '40px',
+        borderRadius: '12px',
+        border: '1px solid #E5E7EB',
+        background: 'rgba(255, 255, 255, 0.85)',
+        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.08)',
+        backdropFilter: 'blur(3px)',
         zIndex: 95,
+        boxSizing: 'border-box',
       }}
     >
-      {/* 수정3. 김문주 미니맵 여백 */}
-      <div className="px-8 py-1.5 bg-gray-50 border-b border-gray-200">
-        <p className="text-xs text-gray-600 font-medium" style={{ marginLeft: '8px' }}>미니 맵</p>
-      </div>
-      {/* 수정3. 수정 끗~ */}
       <div
         ref={minimapRef}
-        className="relative cursor-pointer select-none"
+        className="relative cursor-pointer select-none overflow-hidden rounded-[4px]"
         style={{
           width: minimapWidth,
           height: minimapHeight,
-          background: '#f9fafb',
+          background: 'transparent',
+          marginTop: '12px',
         }}
         onMouseDown={handleMinimapMouseDown}
         onMouseMove={handleMinimapMouseMove}
@@ -139,7 +149,7 @@ export function Minimap({
           return (
             <div
               key={node.id}
-              className="absolute bg-blue-400 rounded"
+              className="absolute rounded"
               style={{
                 left: x,
                 top: y,
@@ -147,6 +157,7 @@ export function Minimap({
                 height,
                 minWidth: 3,
                 minHeight: 3,
+                backgroundColor: '#9ca3af', // 회색 노드로 변경
               }}
             />
           );
@@ -154,14 +165,31 @@ export function Minimap({
 
         {/* 뷰포트 사각형 */}
         <div
-          className="absolute border-2 border-blue-600 bg-blue-500/10 pointer-events-none"
+          className="absolute border-[1.5px] border-blue-500 bg-blue-100/40 pointer-events-none rounded-sm"
           style={{
-            left: Math.max(0, viewportX),
-            top: Math.max(0, viewportY),
-            width: Math.min(viewportWidth, minimapWidth),
-            height: Math.min(viewportHeight, minimapHeight),
+            left: viewportX,
+            top: viewportY,
+            width: viewportWidth,
+            height: viewportHeight,
           }}
         />
+      </div>
+
+      <div
+        style={{
+          display: 'flex',
+          width: '240px',
+          height: '25px',
+          padding: '0 16px',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          position: 'absolute',
+          bottom: 0,
+          background: 'rgba(243, 244, 246, 0.90)',
+          boxSizing: 'border-box',
+        }}
+      >
+        <p className="text-[13px] text-gray-600 font-medium">로직 미리보기</p>
       </div>
     </div>
   );
