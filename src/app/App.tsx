@@ -23,6 +23,10 @@ interface Node {
   options: string[];
   conditions: Array<{
     tags: string[]; or: boolean;
+    logicalOperators?: string[];
+    operators?: string[];
+    targetNodeBadges?: string[];
+    targetNodeTitles?: string[];
     next: string;
     operator?: string; targetNodeBadge?: string; targetNodeTitle?: string;
     destinationBadge?: string; destinationTitle?: string;
@@ -1176,22 +1180,38 @@ function App() {
                               <div className="condition-row"
                                 onMouseEnter={() => setHoverLogicKey(logicKey)}
                                 onMouseLeave={() => setHoverLogicKey(null)}
-                                style={{ position: 'relative' }}>
-                                <svg width="14" height="13" viewBox="0 0 14 13" fill="none">
-                                  <path d="M5.533 11.344c0 .124.036.245.103.35.068.106.165.19.28.245l1.384.667c.105.051.222.075.34.07a.937.937 0 00.682-.389.933.933 0 00.163-.586V7.34a.964.964 0 01.287-.448l4.996-5.331a.964.964 0 00.172-.34.96.96 0 00-.095-.773.964.964 0 00-.629-.447H.691a.96.96 0 00-.628.447.96.96 0 00-.095.773.964.964 0 00.172.34l4.997 5.331a.964.964 0 01.286.448l.11 4.004z" fill="#687384" />
-                                </svg>
-                                <span className="cond-label">만약</span>
-                                {cond.tags.map((tag, ti) => (
-                                  <React.Fragment key={ti}>
-                                    {ti > 0 && <span className="or-badge-inline">또는</span>}
-                                    <span className="cond-tag cond-tag-option">{tag}</span>
-                                  </React.Fragment>
-                                ))}
-                                <span className="cond-tag cond-tag-operator" style={{ background: '#DAE2ED', color: '#7D7E84' }}>{cond.operator || '같음'}</span>
-                                {cond.destinationBadge
-                                  ? <><span style={{ color: C.blue }}>→</span><span style={{ background: C.blueLight, color: C.blueDark, borderRadius: 4, padding: '1px 6px', fontSize: 9, border: `1px solid ${C.blueMid}` }}>{cond.destinationBadge} 이동</span></>
-                                  : <span className="cond-label">일 경우</span>
-                                }
+                                style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '8px' }}>
+                                
+                                {cond.tags.map((tag, ti) => {
+                                  const logicalOp = ti > 0 ? (cond.logicalOperators?.[ti - 1] || 'OR') : null;
+                                  const opForTag = cond.operators?.[ti] || (ti === 0 ? cond.operator : undefined) || '같음';
+
+                                  return (
+                                    <React.Fragment key={ti}>
+                                      {ti > 0 && logicalOp && (
+                                        <div style={{ marginLeft: '24px' }}>
+                                          <span style={{
+                                            backgroundColor: logicalOp === 'AND' ? '#FDF4FF' : '#FCE7F3', // 핑크/퍼플톤 배경
+                                            color: logicalOp === 'AND' ? '#C026D3' : '#DB2777', // 핑크/퍼플톤 텍스트
+                                            padding: '2px 8px', borderRadius: '12px', fontSize: '10px', fontWeight: 600
+                                          }}>{logicalOp === 'AND' ? '그리고' : '또는'}</span>
+                                        </div>
+                                      )}
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginLeft: ti > 0 ? '24px' : '0' }}>
+                                        {ti === 0 && (
+                                          <svg width="14" height="13" viewBox="0 0 14 13" fill="none">
+                                            <path d="M5.533 11.344c0 .124.036.245.103.35.068.106.165.19.28.245l1.384.667c.105.051.222.075.34.07a.937.937 0 00.682-.389.933.933 0 00.163-.586V7.34a.964.964 0 01.287-.448l4.996-5.331a.964.964 0 00.172-.34.96.96 0 00-.095-.773.964.964 0 00-.629-.447H.691a.96.96 0 00-.628.447.96.96 0 00-.095.773.964.964 0 00.172.34l4.997 5.331a.964.964 0 01.286.448l.11 4.004z" fill="#687384" />
+                                          </svg>
+                                        )}
+                                        <span className="cond-label">만약</span>
+                                        <span className="cond-tag cond-tag-option" style={{ background: '#E2E8F0', color: '#64748B' }}>{tag}</span>
+                                        <span className="cond-tag cond-tag-operator" style={{ background: '#DBEAFE', color: '#3B82F6' }}>{opForTag}</span>
+                                        <span className="cond-label">일 경우</span>
+                                      </div>
+                                    </React.Fragment>
+                                  );
+                                })}
+
                                 {/* logic row hover output ConnNode */}
                                 {/* 김문주 수정7. 로직 노드 위치 수정 */}
                                 <div id={`logic-out-${n.id}-${i}`} data-node="out" style={{ position: 'absolute', right: -18, top: '50%', marginTop: '-8px', width: 16, height: 20, opacity: 1, transition: 'opacity 0.12s', zIndex: 20, cursor: 'crosshair' }}
@@ -1200,9 +1220,6 @@ function App() {
                                   {isSel ? <ConnNodeSelected /> : isLogicHov ? <ConnNodeHover /> : <ConnNodeLogic />}
                                 </div>
                               </div>
-                              {i < n.conditions.length - 1 && (
-                                <div className="or-separator"><span className="or-badge">또는</span></div>
-                              )}
                             </React.Fragment>
                           );
                         })}
