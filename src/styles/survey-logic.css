@@ -1,4 +1,4 @@
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/*조민정 root padding값 삭제*/
 
 :root {
   --blue: #007EFF;
@@ -22,21 +22,6 @@
   --shadow-hover: 0 6px 24px rgba(0,0,0,0.10);
 }
 
-body {
-  font-family: 'Pretendard', 'Noto Sans KR', -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  height: 100vh;
-  overflow: hidden;
-}
-
-/* ── TOPBAR ── */
-#topbar {
-  position: fixed; top: 0; left: 0; right: 0; height: 52px;
-  background: #fff;
-  border-bottom: 1px solid var(--border);
-  z-index: 100;
-}
 
 /* ── CANVAS ── */
 #canvas {
@@ -61,9 +46,9 @@ body {
   width: 4000px; height: 2000px;
   pointer-events: none;
   overflow: visible;
-  z-index: 5; 
+  z-index: 5;
 }
-/*이유림 수정함 z-index : 10; -> 5; */
+/*이유림 z-index 10에서 5로 수정*/
 
 /* ── NODE CARDS ── */
 .node {
