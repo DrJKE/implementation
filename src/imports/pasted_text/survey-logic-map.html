@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>설문 로직 맵</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #3B6EF8;
+    --blue-light: #EEF2FF;
+    --blue-mid: #C7D4FD;
+    --blue-dark: #2451D1;
+    --pink: #F857A6;
+    --pink-light: #FEE9F4;
+    --bg: #F5F7FF;
+    --surface: #FFFFFF;
+    --border: #E2E8F8;
+    --text: #1A1F36;
+    --text-muted: #8891AA;
+    --shadow: 0 2px 16px rgba(59,110,248,0.10);
+    --shadow-hover: 0 6px 32px rgba(59,110,248,0.18);
+  }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ── TOPBAR ── */
+  #topbar {
+    position: fixed; top: 0; left: 0; right: 0; height: 52px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+    padding: 0 20px;
+    z-index: 100;
+    box-shadow: 0 1px 6px rgba(59,110,248,0.07);
+  }
+  #topbar .logo { font-size: 13px; font-weight: 700; color: var(--blue); margin-right: 12px; letter-spacing: -0.5px; }
+  #topbar .sep { color: var(--border); font-size: 18px; }
+  #topbar .title { font-size: 13px; font-weight: 500; color: var(--text-muted); }
+  #topbar .spacer { flex: 1; }
+  .tb-btn {
+    padding: 6px 14px; font-size: 12px; font-weight: 500;
+    border-radius: 8px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text-muted);
+    cursor: pointer; transition: all .15s;
+    font-family: inherit;
+  }
+  .tb-btn:hover { border-color: var(--blue); color: var(--blue); }
+  .tb-btn.primary {
+    background: var(--blue); color: #fff; border-color: var(--blue);
+  }
+  .tb-btn.primary:hover { background: var(--blue-dark); }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    position: fixed; left: 0; top: 52px; bottom: 0; width: 200px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 14px 12px;
+    z-index: 90;
+  }
+  .sb-section { margin-bottom: 18px; }
+  .sb-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.8px;
+    color: var(--text-muted); text-transform: uppercase;
+    margin-bottom: 8px; padding-left: 4px;
+  }
+  .sb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .sb-item {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 4px; padding: 8px 4px;
+    border: 1px solid var(--border); border-radius: 10px;
+    font-size: 10px; color: var(--text-muted); cursor: pointer;
+    transition: all .15s; background: var(--surface);
+    user-select: none;
+  }
+  .sb-item:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+  .sb-item .icon { font-size: 16px; }
+
+  /* ── CANVAS ── */
+  #canvas {
+    position: fixed;
+    left: 200px; top: 52px; right: 280px; bottom: 0;
+    overflow: hidden;
+    background:
+      radial-gradient(circle, #C7D4FD 1px, transparent 1px) 0 0 / 22px 22px,
+      var(--bg);
+    cursor: default;
+  }
+  #canvas-inner {
+    position: absolute;
+    width: 3000px; height: 2000px;
+    transform-origin: 0 0;
+  }
+
+  /* ── ZOOM CONTROLS ── */
+  #zoom-ctrl {
+    position: fixed; left: 220px; bottom: 24px;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    z-index: 95;
+  }
+  .zoom-btn {
+    width: 34px; height: 34px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; font-size: 18px; color: var(--text-muted);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: var(--shadow); transition: all .15s;
+    font-family: inherit;
+  }
+  .zoom-btn:hover { border-color: var(--blue); color: var(--blue); }
+  .zoom-label {
+    font-size: 11px; color: var(--text-muted); font-weight: 600;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 3px 8px;
+  }
+
+  /* ── MINIMAP ── */
+  #minimap {
+    position: fixed; right: 290px; bottom: 16px;
+    width: 160px; height: 90px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden;
+    box-shadow: var(--shadow);
+    z-index: 95;
+  }
+
+  /* ── RIGHT PANEL ── */
+  #rightpanel {
+    position: fixed; right: 0; top: 52px; bottom: 0; width: 280px;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    padding: 16px;
+    z-index: 90;
+    overflow-y: auto;
+  }
+  .rp-title { font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 14px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .rp-field { margin-bottom: 14px; }
+  .rp-field label { font-size: 11px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px; }
+  .rp-field select, .rp-field input {
+    width: 100%; padding: 8px 10px; font-size: 12px;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: var(--bg); color: var(--text);
+    font-family: inherit; outline: none;
+  }
+  .rp-field select:focus, .rp-field input:focus { border-color: var(--blue); }
+  .rp-add-btn {
+    width: 100%; padding: 9px; font-size: 12px; font-weight: 600;
+    background: var(--blue-light); color: var(--blue);
+    border: 1.5px dashed var(--blue-mid); border-radius: 10px;
+    cursor: pointer; transition: all .15s; font-family: inherit;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .rp-add-btn:hover { background: var(--blue); color: #fff; border-style: solid; }
+
+  /* ── NODE ── */
+  .node {
+    position: absolute;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    min-width: 230px;
+    max-width: 280px;
+    box-shadow: var(--shadow);
+    transition: box-shadow .2s, border-color .2s;
+    user-select: none;
+  }
+  .node:hover { box-shadow: var(--shadow-hover); border-color: var(--blue-mid); }
+  .node.selected { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,110,248,0.15), var(--shadow-hover); }
+
+  .node-header {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 14px 8px;
+    border-bottom: 1px solid var(--border);
+    cursor: grab;
+  }
+  .node-header:active { cursor: grabbing; }
+  .node-badge {
+    font-size: 9px; font-weight: 700; letter-spacing: 0.5px;
+    padding: 2px 7px; border-radius: 20px;
+    background: var(--blue-light); color: var(--blue);
+    white-space: nowrap;
+  }
+  .node-title {
+    font-size: 12px; font-weight: 600; color: var(--text); flex: 1; line-height: 1.4;
+  }
+
+  .node-body { padding: 10px 14px 12px; display: flex; flex-direction: column; gap: 6px; }
+
+  .option-pill {
+    padding: 7px 12px; font-size: 11px; font-weight: 500;
+    border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text); background: var(--bg);
+    transition: all .15s; cursor: default;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .option-pill:hover { border-color: var(--blue-mid); background: var(--blue-light); }
+
+  .condition-row {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 8px;
+    background: var(--pink-light);
+    border: 1px solid #FACDE8; border-radius: 8px;
+    font-size: 10px; color: #C0426A; flex-wrap: wrap; line-height: 1.6;
+  }
+  .cond-tag {
+    background: var(--pink); color: #fff;
+    border-radius: 5px; padding: 1px 7px; font-size: 10px; font-weight: 600;
+  }
+  .or-tag {
+    background: #fff; color: var(--pink); border: 1px solid var(--pink);
+    border-radius: 5px; padding: 1px 6px; font-size: 10px; font-weight: 700;
+  }
+  .cond-label { font-size: 10px; color: var(--text-muted); }
+
+  /* ── HANDLES ── */
+  .handle {
+    position: absolute; width: 13px; height: 13px;
+    border-radius: 50%;
+    border: 2.5px solid var(--blue);
+    background: #fff;
+    top: 50%; transform: translateY(-50%);
+    transition: all .15s;
+    z-index: 10;
+    cursor: crosshair;
+  }
+  .handle.source { right: -7px; }
+  .handle.target { left: -7px; cursor: default; }
+  .handle:hover, .handle.hovered {
+    background: var(--blue);
+    transform: translateY(-50%) scale(1.5);
+    box-shadow: 0 0 0 4px rgba(59,110,248,0.2);
+  }
+  .handle.connectable {
+    border-color: #22C55E; background: #DCFCE7;
+    animation: pulse-handle 0.8s ease infinite;
+  }
+  .handle.connectable:hover {
+    background: #22C55E;
+    box-shadow: 0 0 0 5px rgba(34,197,94,0.25);
+  }
+  @keyframes pulse-handle {
+    0%, 100% { box-shadow: 0 0 0 0px rgba(34,197,94,0.4); }
+    50% { box-shadow: 0 0 0 6px rgba(34,197,94,0.0); }
+  }
+
+  /* ── SVG EDGES ── */
+  #edge-svg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 3000px; height: 2000px;
+    pointer-events: none;
+    overflow: visible;
+  }
+  .edge-path {
+    fill: none; stroke: var(--blue); stroke-width: 2;
+    marker-end: url(#arrowhead);
+    opacity: 0.7;
+    transition: opacity .15s, stroke-width .15s;
+    pointer-events: stroke;
+    cursor: pointer;
+  }
+  .edge-path:hover { opacity: 1; stroke-width: 2.5; }
+  .edge-path.drawing { stroke: #22C55E; stroke-width: 2; stroke-dasharray: 6 4; opacity: 1; }
+  #arrowhead path { fill: var(--blue); }
+
+  /* ── ADD NODE BUTTON ── */
+  .add-node-fab {
+    position: fixed; left: 216px; bottom: 100px;
+    width: 42px; height: 42px;
+    background: var(--blue); color: #fff;
+    border: none; border-radius: 50%; font-size: 22px;
+    box-shadow: 0 4px 16px rgba(59,110,248,0.35);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    z-index: 96; transition: all .15s; font-family: inherit;
+  }
+  .add-node-fab:hover { background: var(--blue-dark); transform: scale(1.08); }
+
+  /* ── DELETE EDGE TOOLTIP ── */
+  .edge-delete-btn {
+    position: absolute;
+    width: 22px; height: 22px;
+    background: #FEE2E2; border: 1.5px solid #FCA5A5;
+    color: #DC2626; border-radius: 50%; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; z-index: 20;
+    transition: all .15s;
+    pointer-events: all;
+  }
+  .edge-delete-btn:hover { background: #DC2626; color: #fff; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div id="topbar">
+  <span class="logo">∞∞</span>
+  <span class="sep">›</span>
+  <span class="title">동아리 가입 신청서 — 로직 맵</span>
+  <div class="spacer"></div>
+  <button class="tb-btn">뒤로</button>
+  <button class="tb-btn">앞으로</button>
+  <button class="tb-btn">정렬하기</button>
+  <button class="tb-btn">미리보기</button>
+  <button class="tb-btn primary">게시하기</button>
+</div>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="sb-section">
+    <div class="sb-label">선택지</div>
+    <div class="sb-grid">
+      <div class="sb-item" onclick="addNode('객관식')"><span class="icon">☰</span>객관식</div>
+      <div class="sb-item" onclick="addNode('사진선택')"><span class="icon">🖼</span>사진선택</div>
+      <div class="sb-item" onclick="addNode('드롭다운')"><span class="icon">▾</span>드롭다운</div>
+      <div class="sb-item" onclick="addNode('선형배율')"><span class="icon">⇆</span>선형배율</div>
+    </div>
+  </div>
+  <div class="sb-section">
+    <div class="sb-label">주관식</div>
+    <div class="sb-grid">
+      <div class="sb-item" onclick="addNode('단답형')"><span class="icon">─</span>단답형</div>
+      <div class="sb-item" onclick="addNode('장문형')"><span class="icon">≡</span>장문형</div>
+      <div class="sb-item" onclick="addNode('숫자')"><span class="icon">#</span>숫자</div>
+      <div class="sb-item" onclick="addNode('표')"><span class="icon">⊞</span>표</div>
+    </div>
+  </div>
+  <div class="sb-section">
+    <div class="sb-label">참여자 정보</div>
+    <div class="sb-grid">
+      <div class="sb-item" onclick="addNode('전화번호')"><span class="icon">📞</span>전화번호</div>
+      <div class="sb-item" onclick="addNode('이메일')"><span class="icon">✉</span>이메일</div>
+    </div>
+  </div>
+</div>
+
+<!-- CANVAS -->
+<div id="canvas" 
+  onmousedown="canvasMouseDown(event)"
+  onmousemove="canvasMouseMove(event)"
+  onmouseup="canvasMouseUp(event)"
+  onwheel="canvasWheel(event)"
+>
+  <div id="canvas-inner">
+    <svg id="edge-svg">
+      <defs>
+        <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#3B6EF8"/>
+        </marker>
+        <marker id="arrowhead-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#22C55E"/>
+        </marker>
+      </defs>
+      <g id="edges-group"></g>
+      <path id="drawing-edge" class="edge-path drawing" d="" style="display:none" marker-end="url(#arrowhead-green)"/>
+    </svg>
+    <div id="nodes-container"></div>
+  </div>
+</div>
+
+<!-- ZOOM -->
+<div id="zoom-ctrl">
+  <button class="zoom-btn" onclick="zoom(1.15)">+</button>
+  <div class="zoom-label" id="zoom-label">95%</div>
+  <button class="zoom-btn" onclick="zoom(1/1.15)">−</button>
+</div>
+
+<!-- ADD NODE FAB -->
+<button class="add-node-fab" onclick="addNode('객관식')" title="새 질문 추가">+</button>
+
+<!-- MINIMAP -->
+<div id="minimap"><canvas id="minimap-canvas" width="160" height="90"></canvas></div>
+
+<!-- RIGHT PANEL -->
+<div id="rightpanel">
+  <div class="rp-title">기본 이동</div>
+  <div class="rp-field">
+    <label>다음 필드</label>
+    <select><option>다음 필드로 이동</option></select>
+  </div>
+  <div style="margin-bottom:14px">
+    <button class="rp-add-btn">+ 새로운 로직</button>
+  </div>
+  <div class="rp-title" style="margin-top:8px">선택된 노드</div>
+  <div class="rp-field" id="rp-selected"><span style="font-size:11px;color:var(--text-muted)">노드를 클릭하면 정보가 표시됩니다.</span></div>
+</div>
+
+<script>
+// ═══════════════════════════════════
+//  STATE
+// ═══════════════════════════════════
+let scale = 0.95;
+let panX = 60, panY = 60;
+let isPanning = false, panStart = null;
+let nodeId = 4;
+let edgeId = 0;
+let edges = [];
+let selectedNode = null;
+let draggingNode = null, dragOffset = { x: 0, y: 0 };
+let drawingEdge = null; // { fromNodeId, fromX, fromY }
+
+const nodes = [
+  {
+    id: 1, x: 60, y: 180,
+    badge: 'E 1', type: '객관식',
+    title: '평소 작업 시 AI 도구를 활용하시나요?',
+    options: ['예', '아니요'], conditions: []
+  },
+  {
+    id: 2, x: 380, y: 100,
+    badge: 'E 2', type: '객관식',
+    title: 'AI 기능을 통해 가장 해결하고 싶은 디자인 업무는 무엇인가요?',
+    options: ['아이콘 생성', '레이아웃 배치', '컬러 추천', '배경 제거', '텍스트 작성'],
+    conditions: [
+      { tags: ['아이콘 생성'], or: false, next: '포함' },
+      { tags: ['배경 제거'], or: false, next: '포함' }
+    ]
+  },
+  {
+    id: 3, x: 720, y: 60,
+    badge: 'E 3-1', type: '객관식',
+    title: '가장 선호하는 디자인 스타일은 무엇인가요?',
+    options: ['3D 클레이', '미니멀 라인', '플랫 컬러', '핸드 드로잉', '기타'],
+    conditions: [
+      { tags: ['3D 클레이'], or: false, next: '포함' },
+      { tags: ['플랫'], or: false, next: '포함' }
+    ]
+  }
+];
+
+const edgesData = [
+  { id: 'e1', from: 1, to: 2 },
+  { id: 'e2', from: 2, to: 3 }
+];
+
+// ═══════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════
+function applyTransform() {
+  document.getElementById('canvas-inner').style.transform = `translate(${panX}px,${panY}px) scale(${scale})`;
+  document.getElementById('zoom-label').textContent = Math.round(scale * 100) + '%';
+  renderMinimap();
+}
+
+function renderAll() {
+  renderNodes();
+  renderEdges();
+  renderMinimap();
+}
+
+function nodeHTML(n) {
+  const opts = n.options.map(o =>
+    `<div class="option-pill">${o}</div>`
+  ).join('');
+  const conds = n.conditions.map((c, i) => {
+    let html = `<div class="condition-row">`;
+    html += `<span class="cond-label">만약</span> `;
+    c.tags.forEach((t, ti) => {
+      if (ti > 0) html += `<span class="or-tag">또는</span> `;
+      html += `<span class="cond-tag">${t}</span>`;
+    });
+    html += ` <span class="cond-label">포함</span> <span class="cond-tag">${c.next}</span>`;
+    html += `</div>`;
+    if (i < n.conditions.length - 1) {
+      html += `<div style="font-size:10px;color:var(--text-muted);text-align:center;padding:2px 0">또는</div>`;
+    }
+    return html;
+  }).join('');
+
+  return `
+    <div class="node-header" 
+      onmousedown="nodeHeaderMouseDown(event, ${n.id})"
+      onclick="selectNode(${n.id})"
+    >
+      <span class="node-badge">${n.badge}</span>
+      <span class="node-title">${n.title}</span>
+    </div>
+    <div class="node-body">
+      ${opts}
+      ${conds}
+    </div>
+    <div class="handle source" 
+      id="src-${n.id}"
+      onmousedown="handleMouseDown(event, ${n.id})"
+      onmouseenter="handleEnter(this)"
+      onmouseleave="handleLeave(this)"
+    ></div>
+    <div class="handle target" 
+      id="tgt-${n.id}"
+    ></div>
+  `;
+}
+
+function renderNodes() {
+  const container = document.getElementById('nodes-container');
+  nodes.forEach(n => {
+    let el = document.getElementById('node-' + n.id);
+    if (!el) {
+      el = document.createElement('div');
+      el.className = 'node';
+      el.id = 'node-' + n.id;
+      container.appendChild(el);
+    }
+    el.style.left = n.x + 'px';
+    el.style.top = n.y + 'px';
+    el.innerHTML = nodeHTML(n);
+    if (selectedNode === n.id) el.classList.add('selected');
+    else el.classList.remove('selected');
+  });
+}
+
+function getNodeCenter(n) {
+  const el = document.getElementById('node-' + n.id);
+  const w = el ? el.offsetWidth : 250;
+  const h = el ? el.offsetHeight : 120;
+  return { cx: n.x + w, cy: n.y + h / 2, lx: n.x, ly: n.y + h / 2 };
+}
+
+function bezierPath(x1, y1, x2, y2) {
+  const cp = Math.abs(x2 - x1) * 0.5;
+  return `M ${x1} ${y1} C ${x1 + cp} ${y1}, ${x2 - cp} ${y2}, ${x2} ${y2}`;
+}
+
+function renderEdges() {
+  const g = document.getElementById('edges-group');
+  g.innerHTML = '';
+  edgesData.forEach(e => {
+    const fromN = nodes.find(n => n.id === e.from);
+    const toN = nodes.find(n => n.id === e.to);
+    if (!fromN || !toN) return;
+    const f = getNodeCenter(fromN);
+    const t = getNodeCenter(toN);
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', bezierPath(f.cx, f.cy, t.lx, t.ly));
+    path.setAttribute('class', 'edge-path');
+    path.setAttribute('marker-end', 'url(#arrowhead)');
+    path.addEventListener('click', () => deleteEdge(e.id));
+    g.appendChild(path);
+  });
+}
+
+// ═══════════════════════════════════
+//  HANDLE DRAG (draw edge)
+// ═══════════════════════════════════
+function handleEnter(el) { el.classList.add('hovered'); }
+function handleLeave(el) { el.classList.remove('hovered'); }
+
+function handleMouseDown(e, nodeId) {
+  e.stopPropagation();
+  e.preventDefault();
+  const n = nodes.find(x => x.id === nodeId);
+  const { cx, cy } = getNodeCenter(n);
+  drawingEdge = { fromNodeId: nodeId, fromX: cx, fromY: cy };
+  // Highlight all target handles
+  nodes.forEach(x => {
+    if (x.id !== nodeId) {
+      const tgt = document.getElementById('tgt-' + x.id);
+      if (tgt) tgt.classList.add('connectable');
+    }
+  });
+}
+
+function canvasMouseMove(e) {
+  if (drawingEdge) {
+    const rect = document.getElementById('canvas').getBoundingClientRect();
+    const mx = (e.clientX - rect.left - panX) / scale;
+    const my = (e.clientY - rect.top - panY) / scale;
+    // Snap: check proximity to target handles
+    let snapped = null;
+    nodes.forEach(n => {
+      if (n.id === drawingEdge.fromNodeId) return;
+      const { lx, ly } = getNodeCenter(n);
+      const dist = Math.hypot(mx - lx, my - ly);
+      if (dist < 40) snapped = { x: lx, y: ly, nodeId: n.id };
+    });
+    const tx = snapped ? snapped.x : mx;
+    const ty = snapped ? snapped.y : my;
+    const d = bezierPath(drawingEdge.fromX, drawingEdge.fromY, tx, ty);
+    const dp = document.getElementById('drawing-edge');
+    dp.setAttribute('d', d);
+    dp.style.display = '';
+    return;
+  }
+  if (draggingNode) {
+    const rect = document.getElementById('canvas').getBoundingClientRect();
+    const mx = (e.clientX - rect.left - panX) / scale;
+    const my = (e.clientY - rect.top - panY) / scale;
+    const n = nodes.find(x => x.id === draggingNode);
+    n.x = mx - dragOffset.x;
+    n.y = my - dragOffset.y;
+    // Snap to grid 10px
+    n.x = Math.round(n.x / 10) * 10;
+    n.y = Math.round(n.y / 10) * 10;
+    const el = document.getElementById('node-' + n.id);
+    el.style.left = n.x + 'px';
+    el.style.top = n.y + 'px';
+    renderEdges();
+    return;
+  }
+  if (isPanning && panStart) {
+    panX += (e.clientX - panStart.x);
+    panY += (e.clientY - panStart.y);
+    panStart = { x: e.clientX, y: e.clientY };
+    applyTransform();
+  }
+}
+
+function canvasMouseUp(e) {
+  if (drawingEdge) {
+    const rect = document.getElementById('canvas').getBoundingClientRect();
+    const mx = (e.clientX - rect.left - panX) / scale;
+    const my = (e.clientY - rect.top - panY) / scale;
+    // Find snap target
+    let target = null;
+    nodes.forEach(n => {
+      if (n.id === drawingEdge.fromNodeId) return;
+      const { lx, ly } = getNodeCenter(n);
+      if (Math.hypot(mx - lx, my - ly) < 50) target = n.id;
+    });
+    if (target) {
+      // Avoid duplicate
+      const exists = edgesData.find(ed => ed.from === drawingEdge.fromNodeId && ed.to === target);
+      if (!exists) {
+        edgesData.push({ id: 'e' + (++edgeId), from: drawingEdge.fromNodeId, to: target });
+      }
+    }
+    document.getElementById('drawing-edge').style.display = 'none';
+    nodes.forEach(n => {
+      const tgt = document.getElementById('tgt-' + n.id);
+      if (tgt) tgt.classList.remove('connectable');
+    });
+    drawingEdge = null;
+    renderEdges();
+    return;
+  }
+  draggingNode = null;
+  isPanning = false;
+  panStart = null;
+}
+
+function canvasMouseDown(e) {
+  if (e.target === document.getElementById('canvas') || e.target === document.getElementById('canvas-inner')) {
+    isPanning = true;
+    panStart = { x: e.clientX, y: e.clientY };
+    selectedNode = null;
+    renderNodes();
+  }
+}
+
+// ═══════════════════════════════════
+//  NODE DRAG
+// ═══════════════════════════════════
+function nodeHeaderMouseDown(e, id) {
+  if (e.button !== 0) return;
+  e.stopPropagation();
+  draggingNode = id;
+  const n = nodes.find(x => x.id === id);
+  const rect = document.getElementById('canvas').getBoundingClientRect();
+  const mx = (e.clientX - rect.left - panX) / scale;
+  const my = (e.clientY - rect.top - panY) / scale;
+  dragOffset = { x: mx - n.x, y: my - n.y };
+}
+
+function selectNode(id) {
+  selectedNode = id;
+  renderNodes();
+  const n = nodes.find(x => x.id === id);
+  document.getElementById('rp-selected').innerHTML = `
+    <div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:6px">${n.badge} — ${n.type}</div>
+    <div style="font-size:11px;color:var(--text-muted);line-height:1.6">${n.title}</div>
+    <div style="margin-top:10px;font-size:10px;font-weight:600;color:var(--text-muted)">선택지 ${n.options.length}개</div>
+    ${n.options.map(o => `<div style="font-size:11px;padding:4px 8px;margin-top:4px;background:var(--bg);border-radius:6px;border:1px solid var(--border)">${o}</div>`).join('')}
+  `;
+}
+
+// ═══════════════════════════════════
+//  ADD NODE
+// ═══════════════════════════════════
+function addNode(type) {
+  const id = ++nodeId;
+  nodes.push({
+    id,
+    x: 100 + Math.random() * 300,
+    y: 100 + Math.random() * 200,
+    badge: `E ${id}`,
+    type,
+    title: `새 ${type} 질문을 입력하세요`,
+    options: ['옵션 1', '옵션 2'],
+    conditions: []
+  });
+  renderAll();
+}
+
+// ═══════════════════════════════════
+//  DELETE EDGE
+// ═══════════════════════════════════
+function deleteEdge(id) {
+  const idx = edgesData.findIndex(e => e.id === id);
+  if (idx > -1) edgesData.splice(idx, 1);
+  renderEdges();
+}
+
+// ═══════════════════════════════════
+//  ZOOM
+// ═══════════════════════════════════
+function zoom(factor) {
+  scale = Math.min(2, Math.max(0.3, scale * factor));
+  applyTransform();
+  renderEdges();
+}
+
+function canvasWheel(e) {
+  e.preventDefault();
+  const delta = e.deltaY > 0 ? 1 / 1.1 : 1.1;
+  zoom(delta);
+}
+
+// ═══════════════════════════════════
+//  MINIMAP
+// ═══════════════════════════════════
+function renderMinimap() {
+  const cv = document.getElementById('minimap-canvas');
+  const ctx = cv.getContext('2d');
+  ctx.clearRect(0, 0, 160, 90);
+  ctx.fillStyle = '#F5F7FF';
+  ctx.fillRect(0, 0, 160, 90);
+  const scf = 0.055;
+  nodes.forEach(n => {
+    ctx.fillStyle = '#3B6EF8';
+    ctx.globalAlpha = 0.7;
+    ctx.beginPath();
+    ctx.roundRect(n.x * scf + 4, n.y * scf + 4, 40, 14, 3);
+    ctx.fill();
+  });
+  ctx.globalAlpha = 0.3;
+  edgesData.forEach(e => {
+    const f = nodes.find(n => n.id === e.from);
+    const t = nodes.find(n => n.id === e.to);
+    if (!f || !t) return;
+    ctx.strokeStyle = '#3B6EF8';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(f.x * scf + 44, f.y * scf + 11);
+    ctx.lineTo(t.x * scf + 4, t.y * scf + 11);
+    ctx.stroke();
+  });
+  ctx.globalAlpha = 1;
+  // Viewport indicator
+  const canvas = document.getElementById('canvas');
+  const vw = (canvas.offsetWidth / scale) * scf;
+  const vh = (canvas.offsetHeight / scale) * scf;
+  const vx = (-panX / scale) * scf + 4;
+  const vy = (-panY / scale) * scf + 4;
+  ctx.strokeStyle = '#3B6EF8';
+  ctx.lineWidth = 1.5;
+  ctx.globalAlpha = 0.5;
+  ctx.strokeRect(vx, vy, vw, vh);
+  ctx.globalAlpha = 1;
+}
+
+// ═══════════════════════════════════
+//  GLOBAL MOUSEUP
+// ═══════════════════════════════════
+document.addEventListener('mouseup', () => {
+  if (drawingEdge) {
+    document.getElementById('drawing-edge').style.display = 'none';
+    nodes.forEach(n => {
+      const tgt = document.getElementById('tgt-' + n.id);
+      if (tgt) tgt.classList.remove('connectable');
+    });
+    drawingEdge = null;
+    renderEdges();
+  }
+  draggingNode = null;
+  isPanning = false;
+  panStart = null;
+});
+
+// ═══════════════════════════════════
+//  INIT
+// ═══════════════════════════════════
+applyTransform();
+renderAll();
+</script>
+</body>
+</html>
