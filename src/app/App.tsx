@@ -984,12 +984,23 @@ function App() {
                   {/* 전체 선을 드래그해서 위치(midX) 조절 가능하게 만듦 */}
                   <path d={d} fill="none" stroke="transparent" strokeWidth={24} style={{ cursor: 'col-resize', pointerEvents: 'stroke' }}
                     onMouseEnter={() => setHoverConnIdx(i)} onMouseLeave={() => setHoverConnIdx(null)}
-                    onClick={(ev) => { ev.stopPropagation(); setSelectedEdgeId(e.id); }}
+                    onClick={(ev) => {
+                      ev.stopPropagation(); setSelectedEdgeId(e.id);
+                    }}
                     onMouseDown={(ev) => { ev.stopPropagation(); setDraggingEdgeMid(e.id); }} />
                   <path d={d} fill="none" stroke={stroke} strokeWidth={sw} opacity={strokeOpacity} strokeLinecap="round" strokeLinejoin="round" markerEnd={arrId} style={{ pointerEvents: 'none' }} />
 
                   {pathLen > 60 && (
-                    <g style={{ pointerEvents: 'none' }}>
+                    <g
+                      style={{ cursor: 'pointer', pointerEvents: 'all' }}
+                      onClick={(ev) => {
+                        ev.stopPropagation();
+                        // 1. 해당 선이 출발한 부모 카드를 선택 상태로 만들어 우측 패널을 엽니다.
+                        setSelectedNode(e.from);
+                        // 2. 클릭한 선도 파란색으로 활성화되도록 선택합니다.
+                        setSelectedEdgeId(e.id);
+                      }}
+                    >
                       <rect x={bX} y={bY} width={bW} height={bH} rx={bH / 2} fill="white" stroke={isHovered ? C.red : isActive ? C.blue : '#808080'} strokeWidth={isActive || isHovered ? 1.5 : 1} opacity={0.9} filter="url(#lbl-shadow)" />
                       <rect x={bX + 4} y={bY + (bH - 22) / 2} width={44} height={22} rx={11} fill="#eaedf8" />
                       <line x1={bX + 10} y1={bY + 10} x2={bX + 20} y2={bY + 10} stroke={C.blueDark} strokeWidth={1.3} strokeLinecap="round" />
