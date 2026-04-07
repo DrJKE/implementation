@@ -251,11 +251,46 @@ function QuestionPicker({ nodes, excludeId, currentGotoId, onSelect, onClose }: 
 
 // ─── Initial Data ─────────────────────────────────────────────────────────────
 const INITIAL_NODES: Node[] = [
-  { id: 1, x: 50, y: 300, badge: '1', type: '객관식', title: '평소 작업 시 AI 도구를 활용하시나요?', short: '평소 작업 시 AI 도구를...', options: ['예', '아니요'], conditions: [] },
-  { id: 2, x: 550, y: 300, badge: '2', type: '객관식', title: 'AI 기능을 통해 가장 해결하고 싶은 업무는?', short: 'AI 기능을 통해 가장 해...', options: ['아이콘 생성', '레이아웃 배치', '컬러 추천', '배경 제거', '텍스트 작성'], conditions: [] },
-  { id: 3, x: 1050, y: 300, badge: '3-1', type: '객관식', title: '가장 선호하는 AI 아이콘 생성 스타일은?', short: '가장 선호하는 AI...', options: ['3D 클레이', '미니멀 라인', '플랫 컬러', '핸드 드로잉', '기타'], conditions: [] },
+  {
+    id: 1, x: 50, y: 300, badge: '1', type: '객관식', title: '평소 작업 시 AI 도구를 활용하시나요?', short: '평소 작업 시 AI 도구를...', options: ['예', '아니요'], conditions: [{
+      tags: ['아니요'], or: false, operator: '같음', next: '10', destinationBadge: '9', destinationTitle: 'AI 기능 도입과 관련하여 추가로 문의 사항이 있으신가요?',
+      edgeId: 'logic-1-0'
+    }],
+    defaultNextBadge: '2',
+    defaultNextTitle: 'AI기능을 통해 가장 해결하고 싶은 업무는?'
+  },
+  {
+    id: 2, x: 550, y: 300, badge: '2', type: '객관식', title: 'AI 기능을 통해 가장 해결하고 싶은 업무는?', short: 'AI 기능을 통해 가장 해...', options: ['아이콘 생성', '레이아웃 배치', '컬러 추천', '배경 제거', '텍스트 작성'],
+    conditions: [{
+      tags: ['아이콘 생성', '배경제거'], or: true, operator: '같음', next: '3', destinationBadge: '3-1', destinationTitle: '가장 선호하는 AI 아이콘 생성 스타일은?',
+      edgeId: 'logic-2-0'
+    }],
+    defaultNextBadge: '4',
+    defaultNextTitle: 'AI 기능을 도입한다면, 어떤 영역에서 가장 큰 도움을 받고 싶으신가요?'
+  },
+  {
+    id: 3, x: 1050, y: 300, badge: '3-1', type: '객관식', title: '가장 선호하는 AI 아이콘 생성 스타일은?', short: '가장 선호하는 AI...', options: ['3D 클레이', '미니멀 라인', '플랫 컬러', '핸드 드로잉', '기타'],
+    conditions: [{
+      tags: ['3D클레이', '플랫 컬러'], or: true, operator: '같음', next: '6', destinationBadge: '5', destinationTitle: "어떤 방식의 레퍼런스 수집을 선호하시나요?",
+      edgeId: 'logic-3-0'
+    }],
+    defaultNextBadge: '4',
+    defaultNextTitle: 'AI 기능을 도입한다면, 어떤 디자인 단계에서 가장 큰 도움을 받고 싶으신가요?'
+  },
   { id: 4, x: 1550, y: 50, badge: '3-2', type: '객관식', title: "선택하신 스타일의 '입체감'이나 '그림자' 농도 조절 기능이 필요하신가요?", short: '선택하신 스타일의...', options: ['예', '아니요'], conditions: [] },
-  { id: 5, x: 1550, y: 550, badge: '4', type: '객관식', title: 'AI 기능을 도입한다면, 어떤 영역에서 가장 큰 도움을 받고 싶으신가요?', short: 'AI 기능을 도입한다면...', options: ['리서치 및 아이디어 발산', '실무 제작 및 에셋 생성', '검수 및 피드백 자동화'], conditions: [] },
+  {
+    id: 5, x: 1550, y: 550, badge: '4', type: '객관식', title: 'AI 기능을 도입한다면, 어떤 영역에서 가장 큰 도움을 받고 싶으신가요?', short: 'AI 기능을 도입한다면...', options: ['리서치 및 아이디어 발산', '실무 제작 및 에셋 생성', '검수 및 피드백 자동화'],
+    conditions: [{
+      tags: ['실무 제작 및 에셋 생성'], or: false, operator: '같음', next: '7', destinationBadge: '6', destinationTitle: "가장 자동화가 시급한 반복 업무는 무엇인가요?",
+      edgeId: 'logic-5-0'
+    },
+    {
+      tags: ['검수 및 피드백 자동화'], or: false, operator: '같음', next: '8', destinationBadge: '7', destinationTitle: "AI가 검수해주길 바라는 항목은?",
+      edgeId: 'logic-5-1'
+    }
+
+    ]
+  },
   { id: 6, x: 2050, y: 550, badge: '5', type: '객관식', title: '어떤 방식의 레퍼런스 수집을 선호하시나요?', short: '어떤 방식의 레퍼런스...', options: ['URL 입력', '이미지 직접 업로드', '키워드 검색'], conditions: [] },
   { id: 7, x: 2550, y: 50, badge: '6', type: '주관식', title: '가장 자동화가 시급한 반복 업무는 무엇인가요?', short: '가장 자동화가 시급한...', options: ['답변을 입력해주세요'], conditions: [] },
   { id: 8, x: 2550, y: 550, badge: '7', type: '객관식', title: 'AI가 검수해주길 바라는 항목은?', short: 'AI가 검수해주길 바라는...', options: ['색상 일관성', '폰트 정렬', '여백 규칙'], conditions: [] },
@@ -265,10 +300,15 @@ const INITIAL_NODES: Node[] = [
 ];
 
 const INITIAL_EDGES: Edge[] = [
+  { id: 'logic-1-0', from: 1, to: 10, fromLogicDir: 'right', fromLogicIdx: 0 },
   { id: 'e1', from: 1, to: 2 },
-  { id: 'e2', from: 2, to: 3 },
-  { id: 'e3', from: 3, to: 4 },
+  { id: 'logic-2-0', from: 2, to: 3, fromLogicDir: 'right', fromLogicIdx: 0 },
+  { id: 'e2', from: 2, to: 5 },
+  { id: 'e3', from: 3, to: 5 },
+  { id: 'logic-3-0', from: 3, to: 6, fromLogicDir: 'right', fromLogicIdx: 0 },
   { id: 'e5', from: 4, to: 5 },
+  { id: 'logic-5-0', from: 5, to: 7, fromLogicDir: 'right', fromLogicIdx: 0 },
+  { id: 'logic-5-1', from: 5, to: 8, fromLogicDir: 'right', fromLogicIdx: 1 },
   { id: 'e6', from: 5, to: 6 },
   { id: 'e9', from: 6, to: 9 },
   { id: 'e10', from: 7, to: 9 },
