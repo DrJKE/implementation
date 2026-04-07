@@ -1215,22 +1215,6 @@ function App() {
             </svg>
           </button>
           {/* Pan tool (hand) */}
-          <button
-            title="패닝"
-            style={{ width: 36, height: 36, border: 'none', background: 'none', borderRadius: 10, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '4px 2px' }}>
-            <svg width={20} height={20} viewBox="0 0 20 20" fill="none">
-              {/* palm */}
-              <rect x="3.5" y="10" width="13" height="7.5" rx="3.5" fill="#212121" />
-              {/* index */}
-              <rect x="4" y="4" width="2.8" height="8" rx="1.4" fill="#212121" />
-              {/* middle */}
-              <rect x="7.2" y="2.5" width="2.8" height="9" rx="1.4" fill="#212121" />
-              {/* ring */}
-              <rect x="10.4" y="3.5" width="2.8" height="8" rx="1.4" fill="#212121" />
-              {/* pinky */}
-              <rect x="13.6" y="5.5" width="2.4" height="6.5" rx="1.2" fill="#212121" />
-            </svg>
-          </button>
           {/* Divider */}
           <div style={{ width: 1, height: 28, background: C.border, margin: '0 4px' }} />
           {/* Zoom In */}
