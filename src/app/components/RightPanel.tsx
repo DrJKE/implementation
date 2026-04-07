@@ -296,10 +296,9 @@ export default function RightPanel({ selectedNode, nodes, onAddCondition, onAddL
                           </div>
                         )}
 
-                        {/* 1. 대상 노드 선택 */}
+                        {/* 김문주 1. 대상 노드 고정 표시 */}
                         <div style={{ position: 'relative' }}>
                           <div
-                            onClick={() => toggleDropdown(`targetNode-${index}-${tagIdx}`)}
                             style={{
                               display: 'flex', alignItems: 'center', width: '100%', height: '40px', padding: '0 12px',
                               backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '12px', cursor: 'pointer', boxSizing: 'border-box'
@@ -308,13 +307,14 @@ export default function RightPanel({ selectedNode, nodes, onAddCondition, onAddL
                               backgroundColor: '#eef2ff', color: '#4f46e5', fontSize: '11px', fontWeight: 'bold',
                               padding: '2px 6px', borderRadius: '4px', marginRight: '8px', flexShrink: 0
                             }}>
-                              {currentTargetBadge}
+                              {selectedNode.badge}
                             </div>
                             <span style={{ flex: 1, fontSize: '13px', color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left', fontWeight: 500 }}>
-                              {currentTargetTitle}
+                              {selectedNode.title}
                             </span>
-                            <ChevronUpDown />
                           </div>
+                          {/* 김문주 1. 대상 노드 고정 표시 끗*/}
+
 
                           {openDropdown === `targetNode-${index}-${tagIdx}` && (
                             <div style={{
