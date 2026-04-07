@@ -41,26 +41,49 @@ interface Edge { id: string; from: number; to: number; fromOption?: number; from
 interface DrawingEdge { fromNodeId: number; fromX: number; fromY: number; fromOption?: number; fromLogicDir?: string; fromLogicIdx?: number; }
 interface HistoryState { nodes: Node[]; edges: Edge[]; }
 
-// ─── SVG Path Helpers ─────────────────────────────────────────────────────────
 // 김문주_연결선 위아래조절 가능_orthogonalPath 함수 midY적용
-function orthogonalPath(x1: number, y1: number, x2: number, y2: number, customMidX?: number, customMidY?: number, arrivalDir: string = 'left'): string {
+// ─── SVG Path Helpers ─────────────────────────────────────────────────────────
+
+// 💡 심플하고 직관적인 버튼 회피 라우팅 함수
+function smartOrthogonalPath(
+  x1: number, y1: number, x2: number, y2: number,
+  customMidX: number | undefined, customMidY: number | undefined,
+  arrivalDir: string, edgeIndex: number, nodes: Node[], nodeHeights: Record<number, number>
+): string {
   const r = CORNER_R;
 
-  // 1. 왼쪽 도착 (기존의 부드러운 순방향 라우팅)
+  // [1] 선들이 완전히 겹치지 않게 분산시키는 고유 간격 (20px 단위)
+  const staggerX = (edgeIndex % 8) * 20;
+  const staggerY = (edgeIndex % 5) * 20;
+
+  // [2] ★ 핵심: '이동' 버튼 회피 ★
+  // 이동 버튼이 x1+16 위치부터 너비 약 90px을 차지하므로, 
+  // 첫 번째 꺾이는 지점(midX)을 최소 x1 + 120 이후로 밀어냅니다.
+  let midX = customMidX !== undefined ? customMidX : x1 + 120 + staggerX;
+
+  // 목적지가 출발지보다 많이 멀리 있는 경우 중간쯤에서 꺾이도록 비율 조정
+  if (customMidX === undefined && x2 > x1 + 300) {
+    midX = x1 + 160 + staggerX;
+  }
+
+  if (customMidX === undefined && arrivalDir === 'left') {
+    midX = Math.min(midX, Math.max(x1 + 120, x2 - 40));
+  }
+
+  // 4. 왼쪽 도착 (Horizontal-Vertical-Horizontal)
   if (arrivalDir === 'left') {
     const dy = y2 - y1;
-    let midX = customMidX !== undefined ? customMidX : (x1 + x2) / 2;
-
-    if (customMidX === undefined && x2 > x1 + 120) midX = x1 + 60;
-    if (x2 < x1 + 40) midX = customMidX !== undefined ? customMidX : x1 + 40; // 방어 코드
-
     const dx1 = midX - x1;
     const dx2 = x2 - midX;
+
+    // 수평선일 경우
     if (Math.abs(dy) < 2) return `M${x1},${y1} H${x2}`;
 
     const signY = dy >= 0 ? 1 : -1;
     const signX1 = dx1 >= 0 ? 1 : -1;
     const signX2 = dx2 >= 0 ? 1 : -1;
+
+    // 곡선(Round)이 선 길이를 초과하지 않도록 방어 코드 추가
     const cr1 = Math.min(r, Math.abs(dx1) * 0.9, Math.abs(dy) * 0.45);
     const cr2 = Math.min(r, Math.abs(dx2) * 0.9, Math.abs(dy) * 0.45);
 
@@ -74,25 +97,17 @@ function orthogonalPath(x1: number, y1: number, x2: number, y2: number, customMi
     ].join(' ');
   }
 
-  // 2. 위 또는 아래 도착 (새로운 입체적 곡선 라우팅)
+  // 5. 위 또는 아래 도착 (H-V-H-V)
   const isTop = arrivalDir === 'top';
-  const dirY = isTop ? 1 : -1; // 위로 들어갈지 아래로 들어갈지 방향
-  const bufferY = 30; // 카드 위/아래 여유 공간
+  const dirY = isTop ? 1 : -1;
+  const bufferY = 40 + staggerY;
 
-  const defaultMidY = isTop ? y2 - bufferY : y2 + bufferY;
-  const midY = customMidY !== undefined ? customMidY : defaultMidY;
-  // 김문주_연결선 위아래조절 가능_orthogonalPath 함수 midY적용 끗
-
-  let midX = customMidX !== undefined ? customMidX : x1 + 50;
-  if (customMidX === undefined && x2 > x1 + 100) {
-    midX = (x1 + x2) / 2;
-  }
+  let midY = customMidY !== undefined ? customMidY : (isTop ? y2 - bufferY : y2 + bufferY);
 
   const signY1 = midY > y1 ? 1 : -1;
   const signX1 = midX > x1 ? 1 : -1;
   const signX2 = x2 > midX ? 1 : -1;
 
-  // 곡선(Round) 값이 선 길이보다 커지지 않도록 안전장치 계산
   const cr1 = Math.min(r, Math.abs(midX - x1) * 0.9, Math.abs(midY - y1) * 0.45);
   const cr2 = Math.min(r, Math.abs(midY - y1) * 0.45, Math.abs(x2 - midX) * 0.9);
   const cr3 = Math.min(r, Math.abs(x2 - midX) * 0.9, Math.abs(y2 - midY) * 0.9);
@@ -105,7 +120,7 @@ function orthogonalPath(x1: number, y1: number, x2: number, y2: number, customMi
     `Q${midX},${midY} ${midX + signX2 * cr2},${midY}`,
     `H${x2 - signX2 * cr3}`,
     `Q${x2},${midY} ${x2},${midY + dirY * cr3}`,
-    `V${y2}` // 마지막에 세로(Vertical)로 꽂히면서 화살표가 자연스럽게 아래/위를 향함!
+    `V${y2}`
   ].join(' ');
 }
 
@@ -482,7 +497,7 @@ function App() {
       const drawingPath = document.getElementById('drawing-edge') as unknown as SVGPathElement;
       if (drawingPath) {
         // 김문주 연결선 조절 관련 드로잉패스 수정
-        drawingPath.setAttribute('d', orthogonalPath(drawingEdge.fromX, drawingEdge.fromY, mx, my, undefined, undefined, drawDir));
+        drawingPath.setAttribute('d', smartOrthogonalPath(drawingEdge.fromX, drawingEdge.fromY, mx, my, undefined, undefined, drawDir, 0, nodes, nodeHeights));
         // 김문주 연결선 조절 관련 드로잉패스 수정 끗
         drawingPath.style.display = '';
       }
@@ -931,34 +946,63 @@ function App() {
                 }
               }
 
-              // 김문주 수정5. 타겟 노드의 위치를 분석하여 꼬이지 않는 최적의 도착지점 찾기
+              // 💡 김문주 수정: 타겟 핸들 동적 탐색 (화살표가 카드에 가려지거나 꼬이는 현상 완벽 해결)
               const tH = nodeHeights[toN.id] || 200;
               const tW = 280;
               const tX = toN.x;
               const tY = toN.y;
 
+              // 선이 꺾이는 중간 지점(midXValue)을 예측합니다.
+              const staggerX = (i % 8) * 20;
+              let midXValue = e.midX !== undefined ? e.midX : (x1 + 120 + staggerX);
+
+              if (e.midX === undefined) {
+                midXValue = Math.min(midXValue, Math.max(x1 + 120, tX - 40));
+              }
+
+              // 3개의 타겟 핸들 후보
+              const targetHandles = [
+                { dir: 'left', x: tX, y: tY + NODE_Y_OFFSET },
+                { dir: 'top', x: tX + 140, y: tY },
+                { dir: 'bottom', x: tX + 140, y: tY + tH }
+              ];
+
               let targetDir = 'left';
               let x2 = tX;
-              let y2 = tY + NODE_Y_OFFSET; // 기본: 왼쪽 도착
+              let y2 = tY + NODE_Y_OFFSET;
+              let minScore = Infinity;
 
-              // 타겟이 출발지점보다 뒤에 있거나 겹칠 때 (꼬임 방지)
-              if (tX < x1 + 60) {
-                if (y1 < tY + tH / 2) {
-                  targetDir = 'top';
-                  x2 = tX + 140;
-                  y2 = tY;
-                } else {
-                  targetDir = 'bottom';
-                  x2 = tX + 140;
-                  y2 = tY + tH;
+              targetHandles.forEach(h => {
+                // 1. 기준 Y 좌표 설정 (위아래로 드래그한 midY가 있으면 반영)
+                const refY = e.midY !== undefined ? e.midY : y1;
+                let score = Math.hypot(h.x - midXValue, h.y - refY);
+
+                // 2. [관통 방지 패널티 완화] 선이 타겟 카드 안쪽으로 명백하게 파고들었을 때만 역주행 방지
+                // 기존 tX - 20은 분산 띄움(stagger) 때문에 억울하게 패널티를 먹어서 tX + 10으로 완화했습니다.
+                if (h.dir === 'left' && midXValue > tX + 10) {
+                  score += 10000;
                 }
-              }
-              // 김문주 수정5. 김문주 코드 추가
 
-              const midXValue = e.midX !== undefined ? e.midX : (x1 + x2) / 2;
-              // 김문주 연결선 타입 추가
-              const d = orthogonalPath(x1, y1, x2, y2, e.midX, e.midY, targetDir);
-              // 김문주 연결선 타입 추가
+                // 3. [흐름 보정 강화] 카드가 오른쪽에 있다면 높이 차이(150px 제한) 상관없이 무조건 왼쪽 핸들 우선
+                if ((h.dir === 'top' || h.dir === 'bottom') && midXValue <= tX + 10) {
+                  score += 2000;
+                }
+
+                if (score < minScore) {
+                  minScore = score;
+                  targetDir = h.dir;
+                  x2 = h.x;
+                  y2 = h.y;
+                }
+              });
+
+              // 화살표 머리가 카드 테두리 밑에 깔리지 않도록 바깥으로 2px씩 밀어줍니다.
+              if (targetDir === 'left') x2 -= 2;
+              if (targetDir === 'top') y2 -= 2;
+              if (targetDir === 'bottom') y2 += 2;
+              // 💡 김문주 코드 수정 끗
+
+              const d = smartOrthogonalPath(x1, y1, x2, y2, e.midX, e.midY, targetDir, i, nodes, nodeHeights);
 
               const mid = orthogonalMid(x1, y1, x2, y2, e.midX);
               const isActive = selectedNode !== null && (e.from === selectedNode || e.to === selectedNode);
