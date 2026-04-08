@@ -136,7 +136,7 @@ export default function RightPanel({ selectedNode, nodes, onAddCondition, onAddL
                 </div>
               )}
               <span style={{ fontSize: '13px', color: '#374151', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {selectedNode.defaultNextTitle || '다음 필드'}
+                {selectedNode.defaultNextTitle || '목적지를 선택하세요'}
               </span>
             </div>
             <ChevronUpDown />
@@ -542,14 +542,16 @@ export default function RightPanel({ selectedNode, nodes, onAddCondition, onAddL
                         display: 'flex', alignItems: 'center', width: '100%', height: '40px', padding: '0 12px',
                         backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '12px', cursor: 'pointer', boxSizing: 'border-box'
                       }}>
-                      <div style={{
-                        backgroundColor: '#eef2ff', color: '#4f46e5', fontSize: '11px', fontWeight: 'bold',
-                        padding: '2px 6px', borderRadius: '4px', marginRight: '8px', flexShrink: 0
-                      }}>
-                        {condition.destinationBadge || '선택'}
-                      </div>
+                      {condition.destinationBadge && (
+                        <div style={{
+                          backgroundColor: '#eef2ff', color: '#4f46e5', fontSize: '11px', fontWeight: 'bold',
+                          padding: '2px 6px', borderRadius: '4px', marginRight: '8px', flexShrink: 0
+                        }}>
+                          {condition.destinationBadge}
+                        </div>
+                      )}
                       <span style={{ flex: 1, fontSize: '13px', color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left', fontWeight: 500 }}>
-                        {condition.destinationTitle || '목적지 선택'}
+                        {condition.destinationTitle || '목적지를 선택하세요'}
                       </span>
                       <ChevronUpDown />
                     </div>

@@ -912,7 +912,31 @@ function App() {
   };
 
   const deleteEdge = (edgeId: string) => {
-    setEdges(prev => prev.filter(e => e.id !== edgeId));
+    setEdges(prev => {
+      const e = prev.find(x => x.id === edgeId);
+      if (e) {
+        setNodes(currNodes => currNodes.map(n => {
+          if (n.id === e.from) {
+            if (e.fromLogicIdx !== undefined) {
+              const newConds = [...n.conditions];
+              if (newConds[e.fromLogicIdx]) {
+                newConds[e.fromLogicIdx] = { 
+                  ...newConds[e.fromLogicIdx], 
+                  next: '', 
+                  destinationBadge: '', 
+                  destinationTitle: '' 
+                };
+              }
+              return { ...n, conditions: newConds };
+            } else {
+              return { ...n, defaultNextBadge: undefined, defaultNextTitle: undefined };
+            }
+          }
+          return n;
+        }));
+      }
+      return prev.filter(x => x.id !== edgeId);
+    });
     showToast('연결이 해제되었어요');
     setHoverConnIdx(null);
     setTimeout(() => saveToHistory(), 50);
