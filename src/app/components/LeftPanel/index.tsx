@@ -22,9 +22,11 @@ interface Node {
 interface LeftPanelProps {
   nodes: Node[];
   onDeleteNode?: (id: number) => void;
+  selectedNodeId?: number | null;
+  onSelectNode?: (id: number) => void;
 }
 
-export default function LeftPanel({ nodes, onDeleteNode }: LeftPanelProps) {
+export default function LeftPanel({ nodes, onDeleteNode, selectedNodeId, onSelectNode }: LeftPanelProps) {
   const [surveyHeight, setSurveyHeight] = useState(60); // percentage
   const [isResizing, setIsResizing] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -70,7 +72,7 @@ export default function LeftPanel({ nodes, onDeleteNode }: LeftPanelProps) {
     >
       <SectionHeader title="설문 필드" />
 
-      <SurveyFieldsSection nodes={nodes} height={surveyHeight} onDeleteNode={onDeleteNode} />
+      <SurveyFieldsSection nodes={nodes} height={surveyHeight} onDeleteNode={onDeleteNode} selectedNodeId={selectedNodeId} onSelectNode={onSelectNode} />
 
       <Divider isResizing={isResizing} onMouseDown={handleMouseDown} />
 

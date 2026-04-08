@@ -888,7 +888,31 @@ function App() {
 
       {/* ── Left Panel ── */}
       <div style={{ position: 'fixed', left: 0, top: '52px', bottom: 0, width: '283.54px', zIndex: 90 }}>
-        <LeftPanel nodes={nodes} onDeleteNode={handleDeleteNode} />
+        <LeftPanel 
+          nodes={nodes} 
+          onDeleteNode={handleDeleteNode} 
+          selectedNodeId={selectedNode}
+          onSelectNode={(id: number) => {
+            setSelectedNode(id);
+            const n = nodes.find(x => x.id === id);
+            if (n && canvasRef.current) {
+              const viewW = canvasRef.current.offsetWidth;
+              const viewH = canvasRef.current.offsetHeight;
+              const nW = 280;
+              const nH = nodeHeights[n.id] || 200;
+              
+              const screenX = n.x * scale + panX;
+              const screenY = n.y * scale + panY;
+              
+              const isVisible = screenX >= 0 && screenY >= 40 && (screenX + nW * scale) <= viewW && (screenY + nH * scale) <= viewH;
+              
+              if (!isVisible) {
+                setPanX((viewW - nW * scale) / 2 - n.x * scale);
+                setPanY((viewH - nH * scale) / 2 - n.y * scale);
+              }
+            }
+          }}
+        />
       </div>
 
       {/* ── Canvas ── */}

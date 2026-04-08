@@ -20,9 +20,11 @@ interface SurveyFieldsSectionProps {
   nodes: Node[];
   height: number;
   onDeleteNode?: (id: number) => void;
+  selectedNodeId?: number | null;
+  onSelectNode?: (id: number) => void;
 }
 
-export function SurveyFieldsSection({ nodes, height, onDeleteNode }: SurveyFieldsSectionProps) {
+export function SurveyFieldsSection({ nodes, height, onDeleteNode, selectedNodeId, onSelectNode }: SurveyFieldsSectionProps) {
   return (
     <div 
       style={{ 
@@ -35,7 +37,13 @@ export function SurveyFieldsSection({ nodes, height, onDeleteNode }: SurveyField
       <div className="content-stretch flex flex-col items-start px-[13.831px] py-[9.221px] relative w-full">
         <div className="content-stretch flex flex-col gap-[4.61px] items-center relative shrink-0 w-full">
           {nodes.map((node, index) => (
-            <NodeItem key={node.id} node={node} isFirst={index === 0} onDeleteNode={onDeleteNode} />
+            <NodeItem 
+              key={node.id} 
+              node={node} 
+              isSelected={selectedNodeId === node.id}
+              onSelect={() => onSelectNode?.(node.id)}
+              onDeleteNode={onDeleteNode} 
+            />
           ))}
         </div>
       </div>

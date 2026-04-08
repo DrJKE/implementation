@@ -7,14 +7,16 @@ interface NodeItemProps {
     badge: string;
     title: string;
   };
-  isFirst: boolean;
+  isSelected?: boolean;
+  onSelect?: () => void;
   onDeleteNode?: (id: number) => void;
 }
 
-export function NodeItem({ node, isFirst, onDeleteNode }: NodeItemProps) {
+export function NodeItem({ node, isSelected, onSelect, onDeleteNode }: NodeItemProps) {
   return (
     <div
-      className={`w-full flex items-center rounded-xl cursor-pointer transition-colors border group ${isFirst
+      onClick={onSelect}
+      className={`w-full flex items-center rounded-xl cursor-pointer transition-colors border group ${isSelected
         ? 'bg-[#EEF2FF] border-[#C7D2FE]'
         : 'bg-white border-[#F3F4F6] hover:bg-gray-50'
         }`}
