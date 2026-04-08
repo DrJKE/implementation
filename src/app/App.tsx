@@ -267,7 +267,7 @@ function QuestionPicker({ nodes, excludeId, currentGotoId, onSelect, onClose }: 
 // ─── Initial Data ─────────────────────────────────────────────────────────────
 const INITIAL_NODES: Node[] = [
   {
-    id: 1, x: 50, y: 300, badge: '1', type: '객관식', title: '평소 작업 시 AI 도구를 활용하시나요?', short: '평소 작업 시 AI 도구를...', options: ['예', '아니요'], conditions: [{
+    id: 1, x: 50, y: 450, badge: '1', type: '객관식', title: '평소 작업 시 AI 도구를 활용하시나요?', short: '평소 작업 시 AI 도구를...', options: ['예', '아니요'], conditions: [{
       tags: ['아니요'], or: false, operator: '같음', next: '10', destinationBadge: '9', destinationTitle: 'AI 기능 도입과 관련하여 추가로 문의 사항이 있으신가요?',
       edgeId: 'logic-1-0'
     }],
@@ -275,7 +275,7 @@ const INITIAL_NODES: Node[] = [
     defaultNextTitle: 'AI기능을 통해 가장 해결하고 싶은 업무는?'
   },
   {
-    id: 2, x: 550, y: 300, badge: '2', type: '객관식', title: 'AI 기능을 통해 가장 해결하고 싶은 업무는?', short: 'AI 기능을 통해 가장 해...', options: ['아이콘 생성', '레이아웃 배치', '컬러 추천', '배경 제거', '텍스트 작성'],
+    id: 2, x: 550, y: 450, badge: '2', type: '객관식', title: 'AI 기능을 통해 가장 해결하고 싶은 업무는?', short: 'AI 기능을 통해 가장 해...', options: ['아이콘 생성', '레이아웃 배치', '컬러 추천', '배경 제거', '텍스트 작성'],
     conditions: [{
       tags: ['아이콘 생성', '배경제거'], or: true, operator: '같음', next: '3', destinationBadge: '3-1', destinationTitle: '가장 선호하는 AI 아이콘 생성 스타일은?',
       edgeId: 'logic-2-0'
@@ -284,7 +284,7 @@ const INITIAL_NODES: Node[] = [
     defaultNextTitle: 'AI 기능을 도입한다면, 어떤 영역에서 가장 큰 도움을 받고 싶으신가요?'
   },
   {
-    id: 3, x: 1050, y: 300, badge: '3-1', type: '객관식', title: '가장 선호하는 AI 아이콘 생성 스타일은?', short: '가장 선호하는 AI...', options: ['3D 클레이', '미니멀 라인', '플랫 컬러', '핸드 드로잉', '기타'],
+    id: 3, x: 1050, y: 450, badge: '3-1', type: '객관식', title: '가장 선호하는 AI 아이콘 생성 스타일은?', short: '가장 선호하는 AI...', options: ['3D 클레이', '미니멀 라인', '플랫 컬러', '핸드 드로잉', '기타'],
     conditions: [{
       tags: ['3D클레이', '플랫 컬러'], or: true, operator: '같음', next: '6', destinationBadge: '5', destinationTitle: "어떤 방식의 레퍼런스 수집을 선호하시나요?",
       edgeId: 'logic-3-0'
@@ -292,9 +292,9 @@ const INITIAL_NODES: Node[] = [
     defaultNextBadge: '4',
     defaultNextTitle: 'AI 기능을 도입한다면, 어떤 디자인 단계에서 가장 큰 도움을 받고 싶으신가요?'
   },
-  { id: 4, x: 1550, y: 50, badge: '3-2', type: '객관식', title: "선택하신 스타일의 '입체감'이나 '그림자' 농도 조절 기능이 필요하신가요?", short: '선택하신 스타일의...', options: ['예', '아니요'], conditions: [] },
+  { id: 4, x: 1550, y: 200, badge: '3-2', type: '객관식', title: "선택하신 스타일의 '입체감'이나 '그림자' 농도 조절 기능이 필요하신가요?", short: '선택하신 스타일의...', options: ['예', '아니요'], conditions: [] },
   {
-    id: 5, x: 1550, y: 550, badge: '4', type: '객관식', title: 'AI 기능을 도입한다면, 어떤 영역에서 가장 큰 도움을 받고 싶으신가요?', short: 'AI 기능을 도입한다면...', options: ['리서치 및 아이디어 발산', '실무 제작 및 에셋 생성', '검수 및 피드백 자동화'],
+    id: 5, x: 1550, y: 700, badge: '4', type: '객관식', title: 'AI 기능을 도입한다면, 어떤 영역에서 가장 큰 도움을 받고 싶으신가요?', short: 'AI 기능을 도입한다면...', options: ['리서치 및 아이디어 발산', '실무 제작 및 에셋 생성', '검수 및 피드백 자동화'],
     conditions: [{
       tags: ['실무 제작 및 에셋 생성'], or: false, operator: '같음', next: '7', destinationBadge: '6', destinationTitle: "가장 자동화가 시급한 반복 업무는 무엇인가요?",
       edgeId: 'logic-5-0'
@@ -306,12 +306,12 @@ const INITIAL_NODES: Node[] = [
 
     ]
   },
-  { id: 6, x: 2050, y: 550, badge: '5', type: '객관식', title: '어떤 방식의 레퍼런스 수집을 선호하시나요?', short: '어떤 방식의 레퍼런스...', options: ['URL 입력', '이미지 직접 업로드', '키워드 검색'], conditions: [] },
-  { id: 7, x: 2550, y: 50, badge: '6', type: '주관식', title: '가장 자동화가 시급한 반복 업무는 무엇인가요?', short: '가장 자동화가 시급한...', options: ['답변을 입력해주세요'], conditions: [] },
-  { id: 8, x: 2550, y: 550, badge: '7', type: '객관식', title: 'AI가 검수해주길 바라는 항목은?', short: 'AI가 검수해주길 바라는...', options: ['색상 일관성', '폰트 정렬', '여백 규칙'], conditions: [] },
-  { id: 9, x: 3050, y: 550, badge: '8', type: '객관식', title: '유료 플랜 도입 시, 팀 단위 도입을 고려하시나요?', short: '유료 플랜 도입 시...', options: ['예, 팀 전체 도입 예정', '개인 사용 후 검토', '아직 미정'], conditions: [] },
-  { id: 10, x: 3550, y: 550, badge: '9', type: '주관식', title: 'AI 기능 도입과 관련하여 추가로 문의 사항이 있으신가요?', short: 'AI 기능 도입과 관련하여...', options: ['답변을 입력해주세요'], conditions: [] },
-  { id: 11, x: 4050, y: 550, badge: '10', type: '객관식', title: 'AI 도구 도입을 주저하게 만드는 요인은?', short: 'AI 도구 도입을 주저하게...', options: ['비용 부담', '학습 어려움', '데이터 보안', '기타'], conditions: [] },
+  { id: 6, x: 2050, y: 700, badge: '5', type: '객관식', title: '어떤 방식의 레퍼런스 수집을 선호하시나요?', short: '어떤 방식의 레퍼런스...', options: ['URL 입력', '이미지 직접 업로드', '키워드 검색'], conditions: [] },
+  { id: 7, x: 2550, y: 200, badge: '6', type: '주관식', title: '가장 자동화가 시급한 반복 업무는 무엇인가요?', short: '가장 자동화가 시급한...', options: ['답변을 입력해주세요'], conditions: [] },
+  { id: 8, x: 2550, y: 700, badge: '7', type: '객관식', title: 'AI가 검수해주길 바라는 항목은?', short: 'AI가 검수해주길 바라는...', options: ['색상 일관성', '폰트 정렬', '여백 규칙'], conditions: [] },
+  { id: 9, x: 3050, y: 700, badge: '8', type: '객관식', title: '유료 플랜 도입 시, 팀 단위 도입을 고려하시나요?', short: '유료 플랜 도입 시...', options: ['예, 팀 전체 도입 예정', '개인 사용 후 검토', '아직 미정'], conditions: [] },
+  { id: 10, x: 3550, y: 700, badge: '9', type: '주관식', title: 'AI 기능 도입과 관련하여 추가로 문의 사항이 있으신가요?', short: 'AI 기능 도입과 관련하여...', options: ['답변을 입력해주세요'], conditions: [] },
+  { id: 11, x: 4050, y: 700, badge: '10', type: '객관식', title: 'AI 도구 도입을 주저하게 만드는 요인은?', short: 'AI 도구 도입을 주저하게...', options: ['비용 부담', '학습 어려움', '데이터 보안', '기타'], conditions: [] },
 ];
 
 const INITIAL_EDGES: Edge[] = [
@@ -621,8 +621,62 @@ function App() {
     setDrawingEdge({ fromNodeId: nodeId, fromX: startX, fromY: startY, fromLogicIdx: logicIdx });
   };
 
-  const zoom = (factor: number) => setScale(prev => Math.min(2, Math.max(0.3, prev * factor)));
-  const canvasWheel = (e: React.WheelEvent) => { e.preventDefault(); zoom(e.deltaY > 0 ? 1 / 1.1 : 1.1); };
+  const zoomAt = (factor: number, cx?: number, cy?: number) => {
+    setScale(prev => {
+      const newScale = Math.min(2, Math.max(0.3, prev * factor));
+      if (newScale !== prev && canvasRef.current) {
+        const viewW = canvasRef.current.offsetWidth;
+        const viewH = canvasRef.current.offsetHeight;
+        const centerX = cx !== undefined ? cx : viewW / 2;
+        const centerY = cy !== undefined ? cy : viewH / 2;
+        setPanX(p => centerX - ((centerX - p) / prev) * newScale);
+        setPanY(p => centerY - ((centerY - p) / prev) * newScale);
+      }
+      return newScale;
+    });
+  };
+
+  const zoom = (factor: number) => zoomAt(factor);
+
+  const fitNodesToScreen = (nodesToFit: Node[]) => {
+    if (!canvasRef.current || nodesToFit.length === 0) return;
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    nodesToFit.forEach(n => {
+      minX = Math.min(minX, n.x);
+      maxX = Math.max(maxX, n.x + 280); // 카드의 대략적인 너비(280px)
+      minY = Math.min(minY, n.y);
+      maxY = Math.max(maxY, n.y + (nodeHeights[n.id] || 200)); // 카드 높이
+    });
+
+    const padding = 100; // 화면 가장자리 여백
+    const totalW = (maxX - minX) + padding * 2;
+    const totalH = (maxY - minY) + padding * 2;
+
+    const viewW = canvasRef.current.offsetWidth;
+    const viewH = canvasRef.current.offsetHeight;
+
+    let newScale = Math.min(viewW / totalW, viewH / totalH);
+    newScale = Math.max(0.3, Math.min(2, newScale));
+
+    const newPanX = (viewW - (maxX - minX) * newScale) / 2 - minX * newScale;
+    const newPanY = (viewH - (maxY - minY) * newScale) / 2 - minY * newScale;
+
+    setScale(newScale);
+    setPanX(newPanX);
+    setPanY(newPanY);
+  };
+
+  const canvasWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    if (canvasRef.current) {
+      const rect = canvasRef.current.getBoundingClientRect();
+      const cx = e.clientX - rect.left;
+      const cy = e.clientY - rect.top;
+      zoomAt(e.deltaY > 0 ? 1 / 1.1 : 1.1, cx, cy);
+    } else {
+      zoomAt(e.deltaY > 0 ? 1 / 1.1 : 1.1);
+    }
+  };
   const handleViewportChange = (offset: { x: number; y: number }) => { setPanX(offset.x); setPanY(offset.y); };
 
   useEffect(() => {
@@ -689,7 +743,7 @@ function App() {
 
         // 마스터 노드의 기준 X, Y 좌표
         const masterX = col * gapX + 50;
-        let currentY = 300;
+        let currentY = 450;
 
         grpNodes.forEach(gn => {
           gn.x = masterX;
@@ -702,39 +756,7 @@ function App() {
       });
 
       // 김문주 개선 추가: 정렬 후 화면 맞춤 로직 실행(scale, pan)
-      setTimeout(() => {
-        if (!canvasRef.current || next.length === 0) return;
-        // 전체 카드를 감싸는 가상의 큰 박스(Bounding Box)의 끝점들을 찾습니다.
-        let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-        next.forEach(n => {
-          minX = Math.min(minX, n.x);
-          maxX = Math.max(maxX, n.x + 280); // 카드의 대략적인 너비(280px)
-          minY = Math.min(minY, n.y);
-          maxY = Math.max(maxY, n.y + (nodeHeights[n.id] || 200)); // 카드 높이
-        });
-
-        const padding = 100; // 화면 가장자리 여백
-        const totalW = (maxX - minX) + padding * 2;
-        const totalH = (maxY - minY) + padding * 2;
-
-        const viewW = canvasRef.current.offsetWidth;
-        const viewH = canvasRef.current.offsetHeight;
-
-        // 화면에 맞추기 위한 최적의 배율(Scale) 계산
-        let newScale = Math.min(viewW / totalW, viewH / totalH);
-
-        // 너무 작아지거나 커지지 않도록 기존 줌 제한(0.3 ~ 2.0) 적용
-        newScale = Math.max(0.3, Math.min(2, newScale));
-
-        // 화면 정중앙에 배치하기 위한 Pan(위치) 값 계산
-        const newPanX = (viewW - (maxX - minX) * newScale) / 2 - minX * newScale;
-        const newPanY = (viewH - (maxY - minY) * newScale) / 2 - minY * newScale;
-
-        // 계산된 값들 적용
-        setScale(newScale);
-        setPanX(newPanX);
-        setPanY(newPanY);
-      }, 0);
+      setTimeout(() => fitNodesToScreen(next), 0);
       // 김문주 개선 추가 끝
       return next;
     });
@@ -1393,20 +1415,20 @@ function App() {
           {/* Pan tool (hand) */}
           {/* Divider */}
           <div style={{ width: 1, height: 28, background: C.border, margin: '0 4px' }} />
-          {/* Zoom In */}
-          <button onClick={() => zoom(1.1)} title="확대" style={{ width: 36, height: 40, border: 'none', background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.text }}>
-            <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><circle cx={11} cy={11} r={7} /><path d="M21 21l-3.5-3.5M11 8v6M8 11h6" /></svg>
-          </button>
-          {/* Zoom % */}
-          <div style={{ fontSize: 11, fontWeight: 700, color: C.text, textAlign: 'center', padding: '2px 0', lineHeight: 1 }}>{Math.round(scale * 100)}%</div>
           {/* Zoom Out */}
           <button onClick={() => zoom(0.9)} title="축소" style={{ width: 40, height: 36, border: 'none', background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.text }}>
             <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><circle cx={11} cy={11} r={7} /><path d="M21 21l-3.5-3.5M8 11h6" /></svg>
           </button>
+          {/* Zoom % */}
+          <div style={{ fontSize: 11, fontWeight: 700, color: C.text, textAlign: 'center', padding: '2px 0', lineHeight: 1 }}>{Math.round(scale * 100)}%</div>
+          {/* Zoom In */}
+          <button onClick={() => zoom(1.1)} title="확대" style={{ width: 36, height: 40, border: 'none', background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.text }}>
+            <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><circle cx={11} cy={11} r={7} /><path d="M21 21l-3.5-3.5M11 8v6M8 11h6" /></svg>
+          </button>
           {/* Divider */}
           <div style={{ width: 1, height: 28, background: C.border, margin: '0 4px' }} />
           {/* Fit Screen */}
-          <button onClick={() => { setScale(0.95); setPanX(60); setPanY(60); showToast('화면에 맞게 조정했어요'); }} title="화면 맞추기" style={{ width: 36, height: 40, border: 'none', background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.text }}>
+          <button onClick={() => { fitNodesToScreen(nodes); showToast('화면에 맞게 조정했어요'); }} title="화면 맞추기" style={{ width: 36, height: 40, border: 'none', background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.text }}>
             <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3" /></svg>
           </button>
         </div>
