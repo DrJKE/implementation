@@ -743,7 +743,64 @@ function App() {
 
   const handleDeleteNode = (id: number) => {
     saveToHistory();
-    setNodes(prev => prev.filter(n => n.id !== id));
+    const remainingEdges = edges.filter(e => e.from !== id && e.to !== id);
+    const remainingNodes = nodes.filter(n => n.id !== id);
+
+    // 노드 순번(배지) 재정렬
+    const existGroups = new Set<string>();
+    remainingNodes.forEach(n => existGroups.add(getGroupId(n.badge)));
+
+    const groupArr = Array.from(existGroups);
+    const groupMap = new Map<string, string>();
+    groupArr.forEach((gid, i) => groupMap.set(gid, String(i + 1)));
+
+    const groupCounts = new Map<string, number>();
+    remainingNodes.forEach(n => {
+      const newGid = groupMap.get(getGroupId(n.badge))!;
+      groupCounts.set(newGid, (groupCounts.get(newGid) || 0) + 1);
+    });
+
+    const groupCurrentIdx = new Map<string, number>();
+
+    const newNodes = remainingNodes.map(n => {
+      const oldGid = getGroupId(n.badge);
+      const newGid = groupMap.get(oldGid)!;
+      let newBadge = newGid;
+      const totalInGroup = groupCounts.get(newGid)!;
+
+      if (totalInGroup > 1) {
+        const idx = (groupCurrentIdx.get(newGid) || 0) + 1;
+        groupCurrentIdx.set(newGid, idx);
+        newBadge = `${newGid}-${idx}`;
+      }
+      return { ...n, badge: newBadge };
+    });
+
+    const idToNewBadge = new Map<number, string>();
+    newNodes.forEach(n => idToNewBadge.set(n.id, n.badge));
+
+    const finalNodes = newNodes.map(n => {
+      const updatedConditions = n.conditions.map(cond => {
+        const nextId = parseInt(cond.next, 10);
+        if (!isNaN(nextId) && idToNewBadge.has(nextId)) {
+          return { ...cond, destinationBadge: idToNewBadge.get(nextId) };
+        }
+        return cond;
+      });
+
+      let newDefBadge = n.defaultNextBadge;
+      const defEdge = remainingEdges.find(e => e.from === n.id && e.fromOption === undefined && e.fromLogicDir === undefined);
+      if (defEdge && idToNewBadge.has(defEdge.to)) {
+        newDefBadge = idToNewBadge.get(defEdge.to);
+      } else if (!defEdge) {
+        newDefBadge = undefined;
+      }
+
+      return { ...n, conditions: updatedConditions, defaultNextBadge: newDefBadge };
+    });
+
+    setEdges(remainingEdges);
+    setNodes(finalNodes);
     if (selectedNode === id) setSelectedNode(null);
     showToast('카드를 삭제했어요');
   };
